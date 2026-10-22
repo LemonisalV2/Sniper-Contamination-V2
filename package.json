@@ -1,0 +1,16 @@
+
+{
+  "name": "sniper-contamination",
+  "productName": "SNIPER CONTAMINATION",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SNIPER CONTAMINATION game with room-based online co-op",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "type": "commonjs"
+}
