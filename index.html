@@ -7559,7 +7559,18 @@
     });
     btnMenuQuit.addEventListener('click', openMainQuitConfirm);
     btnCancelMainQuit.addEventListener('click', closeMainQuitConfirm);
-    btnConfirmMainQuit.addEventListener('click', () => window.close());
+    btnConfirmMainQuit.addEventListener('click', () => {
+    window.close();
+    // Browsers ignore window.close() for tabs the script didn't open,
+    // so if we're still here after a moment, show a message instead.
+    setTimeout(() => {
+        closeMainQuitConfirm();
+        setOnlineNotificationMessage('You can now close this tab.', {
+            disconnect: false,
+            duration: 3000
+        });
+    }, 150);
+});
     btnConfirmQuit.addEventListener('click', () => {
         if (clearSavedRun()) showMenu();
     });
