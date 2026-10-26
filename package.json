@@ -18,7 +18,13 @@
       "output": "C:/SniperBuild"
     },
     "asarUnpack": [
-      "server.js"
+      "server.js",
+      "index.html",
+      "*.png",
+      "*.mp3",
+      "*.svg",
+      "*.css",
+      "node_modules/ws/**"
     ],
     "files": [
       "main.js",
@@ -27,7 +33,8 @@
       "index.html",
       "*.png",
       "*.mp3",
-      "icon.ico"
+      "icon.ico",
+      "node_modules/**"
     ],
     "win": {
       "target": "nsis",

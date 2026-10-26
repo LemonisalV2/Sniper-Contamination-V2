@@ -1370,6 +1370,34 @@
         font-size: 1.35rem;
         text-shadow: 0 0 12px rgba(0,170,255,0.75);
     }
+    #playModeOverlay .menuActionContent {
+        position:relative;
+        overflow:hidden;
+        width:min(92vw, 46rem);
+        padding:clamp(1.5rem,4vw,3rem);
+        border:1px solid rgba(0,255,102,.72);
+        border-radius:28px;
+        background:radial-gradient(ellipse at 50% 0%,rgba(0,255,102,.15),transparent 60%),linear-gradient(145deg,rgba(3,18,16,.98),rgba(1,5,12,.99));
+        box-shadow:0 0 0 1px rgba(0,255,102,.12),0 0 45px rgba(0,255,102,.22),inset 0 0 35px rgba(0,170,255,.07);
+        animation:playCardReveal .55s cubic-bezier(.16,1,.3,1) both;
+    }
+    #playModeOverlay .menuActionContent::before {
+        content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;
+        background:linear-gradient(rgba(0,255,102,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,102,.12) 1px,transparent 1px);
+        background-size:24px 24px;mask-image:linear-gradient(to bottom,black,transparent 85%);
+    }
+    #playModeTitle { position:relative;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#eafff0;text-shadow:0 0 10px #00ff66,0 0 28px rgba(0,255,102,.5);margin-bottom:1.8rem; }
+    #playModeOverlay .menuActionButtons { position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:0; }
+    #playModeOverlay .menuActionButtons .btn { position:relative;min-height:5.2rem;margin:0;padding:1rem 1.2rem;border-radius:16px;font-size:1.05rem;letter-spacing:.12em;border:1px solid rgba(255,255,255,.35);overflow:hidden;transition:transform .22s cubic-bezier(.2,.9,.25,1.2),box-shadow .22s ease,filter .22s ease; }
+    #playModeOverlay #btnSoloMode { background:linear-gradient(135deg,#a5ffbf,#00ff66 55%,#008c3b);color:#00190a;box-shadow:0 0 22px rgba(0,255,102,.3),inset 0 1px rgba(255,255,255,.7); }
+    #playModeOverlay #btnOnlineMode { background:linear-gradient(135deg,#9beaff,#00aaff 55%,#0054b8);color:#00121c;box-shadow:0 0 22px rgba(0,170,255,.3),inset 0 1px rgba(255,255,255,.65); }
+    #playModeOverlay #btnCancelPlayMode { grid-column:1/-1;min-height:3.2rem;background:rgba(200,220,225,.08);color:#d9f7ff;border:1px solid rgba(200,240,255,.25);box-shadow:none; }
+    #playModeOverlay .menuActionButtons .btn:hover,#playModeOverlay .menuActionButtons .btn.btnFocused { transform:translateY(-5px) scale(1.025);filter:brightness(1.13); }
+    #playModeOverlay .menuActionButtons .btn::after { content:"";position:absolute;inset:-40% auto -40% -60%;width:35%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.65),transparent);transition:left .55s ease;pointer-events:none; }
+    #playModeOverlay .menuActionButtons .btn:hover::after,#playModeOverlay .menuActionButtons .btn.btnFocused::after { left:130%; }
+    @keyframes playCardReveal { from{opacity:0;transform:translateY(24px) scale(.94);filter:blur(8px)} to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)} }
+    @media(max-width:520px) { #playModeOverlay .menuActionButtons {grid-template-columns:1fr;} #playModeOverlay #btnCancelPlayMode {grid-column:auto;} }
+
     .menuActionStatus {
         min-height: 1.5em;
         margin: 0.5rem 0 1rem;
@@ -2296,6 +2324,47 @@
         0% { transform: translateX(0) skewX(-4deg) scaleX(1.04); opacity: 1; }
         100% { transform: translateX(110%) skewX(-12deg) scaleX(0.92); opacity: 0; }
     }
+    /* Ten randomized cinematic transition styles. */
+    .screenTransition[class*="transitionStyle"] { inset: -18%; top:-18%; bottom:-18%; left:-18%; width:136%; }
+    .screenTransition.transitionStyle1 { background:linear-gradient(110deg,transparent 0 18%,#00150b 28%,#00ff66 48%,#dffff0 50%,#00aaff 53%,#001018 75%,transparent 90%); }
+    .screenTransition.transitionStyle2 { background:repeating-linear-gradient(0deg,#02040a 0 8px,#00ff66 9px 11px,#001018 12px 20px); }
+    .screenTransition.transitionStyle3 { background:radial-gradient(circle at 50% 50%,#dffff0 0,#00ff66 8%,#003c2a 32%,#02040a 70%); border-radius:50%; }
+    .screenTransition.transitionStyle4 { background:linear-gradient(135deg,#00aaff 0 12%,#001018 25%,#00ff66 48%,#eafff0 50%,#003b27 52%,#02040a 78%); }
+    .screenTransition.transitionStyle5 { background:repeating-linear-gradient(90deg,#02040a 0 12%,#00ff66 12.5% 13%,#001018 14% 25%); }
+    .screenTransition.transitionStyle6 { background:conic-gradient(from 0deg at 50% 50%,#02040a,#00ff66,#dffff0,#00aaff,#02040a); border-radius:50%; }
+    .screenTransition.transitionStyle7 { background:linear-gradient(180deg,#02040a,#00ff66 45%,#dffff0 50%,#00aaff 54%,#02040a); }
+    .screenTransition.transitionStyle8 { background:linear-gradient(45deg,transparent 20%,#00ff66 40%,#eafff0 50%,#00aaff 60%,transparent 80%); }
+    .screenTransition.transitionStyle9 { background:repeating-linear-gradient(135deg,#02040a 0 18px,#003b27 19px 30px,#00ff66 31px 34px,#001018 35px 48px); }
+    .screenTransition.transitionStyle10 { background:radial-gradient(ellipse at center,#eafff0 0,#00ff66 12%,#00452d 30%,#001018 60%,#02040a 80%); }
+    .screenTransition[class*="transitionStyle"].active { animation-duration:.72s; }
+    .screenTransition.transitionStyle2.active { animation-name:transitionGlitchIn; }
+    .screenTransition.transitionStyle2.leave { animation-name:transitionGlitchOut; }
+    .screenTransition.transitionStyle3.active,.screenTransition.transitionStyle6.active { animation-name:transitionPortalIn; }
+    .screenTransition.transitionStyle3.leave,.screenTransition.transitionStyle6.leave { animation-name:transitionPortalOut; }
+    .screenTransition.transitionStyle4.active,.screenTransition.transitionStyle8.active { animation-name:transitionDiagonalIn; }
+    .screenTransition.transitionStyle4.leave,.screenTransition.transitionStyle8.leave { animation-name:transitionDiagonalOut; }
+    .screenTransition.transitionStyle5.active,.screenTransition.transitionStyle9.active { animation-name:transitionBarsIn; }
+    .screenTransition.transitionStyle5.leave,.screenTransition.transitionStyle9.leave { animation-name:transitionBarsOut; }
+    .screenTransition.transitionStyle7.active { animation-name:transitionVerticalIn; }
+    .screenTransition.transitionStyle7.leave { animation-name:transitionVerticalOut; }
+    .screenTransition.transitionStyle10.active { animation-name:transitionPulseIn; }
+    .screenTransition.transitionStyle10.leave { animation-name:transitionPulseOut; }
+    @keyframes transitionGlitchIn { 0%{opacity:0;transform:translateX(-100%) skewX(-20deg)} 35%{opacity:1;transform:translateX(8%) skewX(8deg)} 55%{transform:translateX(-3%) skewX(-3deg)} 100%{opacity:1;transform:translateX(0)} }
+    @keyframes transitionGlitchOut { to{opacity:0;transform:translateX(110%) skewX(20deg)} }
+    @keyframes transitionPortalIn { 0%{opacity:0;transform:scale(.05) rotate(-35deg);border-radius:50%} 70%{opacity:1;transform:scale(1.08) rotate(8deg);border-radius:50%} 100%{opacity:1;transform:scale(1) rotate(0);border-radius:0} }
+    @keyframes transitionPortalOut { to{opacity:0;transform:scale(.05) rotate(35deg);border-radius:50%} }
+    @keyframes transitionDiagonalIn { 0%{opacity:0;transform:translate(-100%,-30%) rotate(-12deg)} 100%{opacity:1;transform:translate(0,0) rotate(0)} }
+    @keyframes transitionDiagonalOut { to{opacity:0;transform:translate(110%,30%) rotate(12deg)} }
+    @keyframes transitionBarsIn { 0%{opacity:0;transform:scaleX(0);filter:brightness(2)} 100%{opacity:1;transform:scaleX(1);filter:brightness(1)} }
+    @keyframes transitionBarsOut { to{opacity:0;transform:scaleX(0);filter:brightness(2)} }
+    @keyframes transitionVerticalIn { 0%{opacity:0;transform:translateY(-110%)} 100%{opacity:1;transform:translateY(0)} }
+    @keyframes transitionVerticalOut { to{opacity:0;transform:translateY(110%)} }
+    @keyframes transitionPulseIn { 0%{opacity:0;transform:scale(1.8);filter:brightness(3)} 100%{opacity:1;transform:scale(1);filter:brightness(1)} }
+    @keyframes transitionPulseOut { to{opacity:0;transform:scale(.65);filter:brightness(2)} }
+    @media (prefers-reduced-motion: reduce) {
+      .screenTransition[class*="transitionStyle"].active,.screenTransition[class*="transitionStyle"].leave { animation-duration:.01ms !important; }
+    }
+
     .controllerNotification.disconnect {
         background: rgba(255,0,51,0.95);
         border-color: #ff0033;
@@ -2481,6 +2550,82 @@
     #gameContainer.controllerMode button.btnFocused:hover {
         animation: allButtonsHover 0.8s ease-in-out infinite alternate, buttonGreenFocusCycle 1.2s ease-in-out infinite;
     }
+</style>
+<style>
+/* ELEMENTAL TRANSITIONS — each randomized style has its own elemental identity */
+.screenTransition[class*="transitionStyle"] {
+  background-size: 100% 100%;
+  border-radius: 0 !important;
+  overflow: hidden;
+  will-change: transform, opacity, filter;
+}
+/* 1 — FIRE: rising flame tongues and embers */
+.screenTransition.transitionStyle1 {
+  background:
+    radial-gradient(ellipse at 18% 100%, #fff5a8 0 3%, #ffb000 8%, transparent 35%),
+    radial-gradient(ellipse at 76% 110%, #fff0a0 0 4%, #ff4b00 13%, transparent 38%),
+    repeating-linear-gradient(76deg, transparent 0 12%, rgba(255,55,0,.95) 13%, rgba(255,190,0,.7) 15%, transparent 21%),
+    linear-gradient(0deg,#210400,#a51b00 36%,#ff5b00 58%,#180400 100%);
+  filter: saturate(1.35);
+}
+.screenTransition.transitionStyle1::before { content:""; position:absolute; inset:-20%; background:repeating-radial-gradient(ellipse at 50% 100%, transparent 0 15px,rgba(255,188,0,.55) 17px 20px,transparent 24px 42px); animation:elementFire .65s ease-in-out infinite alternate; }
+/* 2 — ICE: frost shards and frozen blue light */
+.screenTransition.transitionStyle2 {
+  background: radial-gradient(circle at 50% 45%,#f2ffff 0,#8df5ff 8%,#138bbd 33%,#05213e 68%,#010711 100%);
+}
+.screenTransition.transitionStyle2::before { content:""; position:absolute; inset:-15%; background:repeating-linear-gradient(52deg,transparent 0 8%,rgba(221,255,255,.9) 8.2% 8.5%,transparent 9% 17%),repeating-linear-gradient(128deg,transparent 0 13%,rgba(69,222,255,.7) 13.2% 13.6%,transparent 14% 25%); clip-path:polygon(0 0,100% 0,100% 100%,0 100%); animation:elementIce .72s ease-in-out infinite alternate; }
+/* 3 — NATURE: vines, leaves and emerald growth */
+.screenTransition.transitionStyle3 {
+  background: radial-gradient(ellipse at center,#caff83 0,#32d94b 15%,#075d2b 42%,#01180b 78%);
+}
+.screenTransition.transitionStyle3::before { content:""; position:absolute; inset:-15%; background:repeating-linear-gradient(68deg,transparent 0 9%,rgba(117,255,93,.9) 9.3% 9.8%,transparent 10.2% 18%),repeating-linear-gradient(112deg,transparent 0 16%,rgba(4,75,27,.95) 16.5% 18%,transparent 18.5% 29%); animation:elementNature .8s ease-in-out infinite alternate; }
+/* 4 — LIGHTNING: electric bolts and white-hot flashes */
+.screenTransition.transitionStyle4 {
+  background: repeating-linear-gradient(105deg,#03091a 0 18%,#132a6d 19%,#45cfff 20%,#e9ffff 20.5%,#10235c 21%,#020611 28%);
+}
+.screenTransition.transitionStyle4::before { content:""; position:absolute; inset:-5%; background:linear-gradient(112deg,transparent 42%,#bafaff 43%,#fff 44%,#4beaff 45%,transparent 47%),linear-gradient(72deg,transparent 57%,#e9ffff 58%,#50caff 59%,transparent 61%); filter:drop-shadow(0 0 12px #50dfff); animation:elementLightning .24s steps(2,end) infinite; }
+/* 5 — SHADOW: dark smoke and crimson rifts */
+.screenTransition.transitionStyle5 {
+  background: radial-gradient(ellipse at 50% 50%,#451022 0,#160914 35%,#030208 72%,#000 100%);
+}
+.screenTransition.transitionStyle5::before { content:""; position:absolute; inset:-20%; background:repeating-radial-gradient(ellipse at 35% 60%,transparent 0 14px,rgba(120,0,39,.55) 22px 42px,transparent 55px 78px); filter:blur(5px); animation:elementShadow .8s ease-in-out infinite alternate; }
+/* 6 — CRYSTAL: prismatic glass facets */
+.screenTransition.transitionStyle6 {
+  background: conic-gradient(from 30deg at 50% 50%,#092b55,#8bfaff,#ffffff,#d6a4ff,#3e54a8,#73ffd2,#092b55);
+}
+.screenTransition.transitionStyle6::before { content:""; position:absolute; inset:0; background:repeating-linear-gradient(45deg,transparent 0 10%,rgba(255,255,255,.72) 10.2% 10.6%,transparent 11% 20%),repeating-linear-gradient(135deg,transparent 0 17%,rgba(255,255,255,.42) 17.2% 17.7%,transparent 18% 32%); mix-blend-mode:screen; animation:elementCrystal .65s linear infinite; }
+/* 7 — TOXIC: radioactive lime vapor and bubbling cells */
+.screenTransition.transitionStyle7 {
+  background: radial-gradient(circle at 45% 45%,#eaff00 0,#76ff00 12%,#168000 34%,#05210b 68%,#010501 100%);
+}
+.screenTransition.transitionStyle7::before { content:""; position:absolute; inset:-12%; background:radial-gradient(circle at 20% 25%,rgba(218,255,0,.9) 0 2%,transparent 5%),radial-gradient(circle at 70% 30%,rgba(132,255,0,.85) 0 4%,transparent 7%),radial-gradient(circle at 42% 72%,rgba(218,255,0,.75) 0 3%,transparent 6%),radial-gradient(circle at 85% 80%,rgba(132,255,0,.8) 0 5%,transparent 8%); animation:elementToxic .6s ease-in-out infinite alternate; }
+/* 8 — OCEAN: deep water currents and aqua waves */
+.screenTransition.transitionStyle8 {
+  background: repeating-linear-gradient(0deg,#00152b 0 10%,#004e70 12%,#00c9d8 14%,#00668d 16%,#00152b 23%);
+}
+.screenTransition.transitionStyle8::before { content:""; position:absolute; inset:-15%; background:repeating-radial-gradient(ellipse at 50% 120%,transparent 0 18px,rgba(107,255,255,.65) 20px 23px,transparent 25px 42px); animation:elementOcean .7s ease-in-out infinite alternate; }
+/* 9 — COSMIC: starfield, nebula and violet energy */
+.screenTransition.transitionStyle9 {
+  background: radial-gradient(ellipse at 50% 50%,#6c2cff 0,#1c126b 25%,#07051d 63%,#000 100%);
+}
+.screenTransition.transitionStyle9::before { content:""; position:absolute; inset:0; background:radial-gradient(circle at 12% 24%,white 0 1px,transparent 2px),radial-gradient(circle at 28% 76%,#9dfbff 0 2px,transparent 3px),radial-gradient(circle at 71% 20%,white 0 1px,transparent 2px),radial-gradient(circle at 86% 65%,#ffb8ff 0 2px,transparent 3px),radial-gradient(circle at 54% 42%,white 0 1px,transparent 2px),radial-gradient(ellipse at 50% 50%,rgba(255,63,226,.42),transparent 55%); background-size:100% 100%; animation:elementCosmic .7s linear infinite alternate; }
+/* 10 — SOLAR: golden plasma ring and radiant sunburst */
+.screenTransition.transitionStyle10 {
+  background: radial-gradient(circle at 50% 50%,#fffde0 0,#ffdf4b 8%,#ff7b00 25%,#9b1b00 48%,#190400 76%,#000 100%);
+}
+.screenTransition.transitionStyle10::before { content:""; position:absolute; inset:-15%; background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,245,154,.9) 0deg 2deg,transparent 3deg 15deg); mask-image:radial-gradient(circle at center,transparent 0 18%,#000 20% 72%,transparent 78%); animation:elementSolar .8s linear infinite; }
+@keyframes elementFire { from{transform:translateY(5%) scaleX(.94)} to{transform:translateY(-5%) scaleX(1.06)} }
+@keyframes elementIce { from{transform:scale(1) rotate(-2deg);opacity:.55} to{transform:scale(1.08) rotate(2deg);opacity:1} }
+@keyframes elementNature { from{transform:translate(-2%,2%) rotate(-2deg)} to{transform:translate(2%,-2%) rotate(2deg)} }
+@keyframes elementLightning { 0%,100%{opacity:.35;transform:translateX(-2%)} 45%{opacity:1;transform:translateX(2%)} 50%{opacity:.15} }
+@keyframes elementShadow { from{transform:translate(-3%,2%) scale(1)} to{transform:translate(3%,-2%) scale(1.12)} }
+@keyframes elementCrystal { from{transform:translateX(-2%) rotate(0deg)} to{transform:translateX(2%) rotate(3deg)} }
+@keyframes elementToxic { from{transform:scale(.94) rotate(-2deg);filter:hue-rotate(-8deg)} to{transform:scale(1.08) rotate(2deg);filter:hue-rotate(8deg)} }
+@keyframes elementOcean { from{transform:translateY(4%) scaleY(.95)} to{transform:translateY(-4%) scaleY(1.05)} }
+@keyframes elementCosmic { from{transform:scale(.96) rotate(-1deg);opacity:.65} to{transform:scale(1.06) rotate(1deg);opacity:1} }
+@keyframes elementSolar { from{transform:rotate(0deg) scale(1)} to{transform:rotate(35deg) scale(1.08)} }
+@media (prefers-reduced-motion:reduce) { .screenTransition[class*="transitionStyle"]::before{animation:none!important} }
+
 </style>
 </head>
 <body>
@@ -2919,7 +3064,7 @@
 <script>
 (function() {
     const baseText = {
-        titleMain: "SNIPER CONTAMINATIONs",
+        titleMain: "SNIPER CONTAMINATION",
         settingsTitle: "Settings",
         labelLanguage: "Language",
         labelFPS: "Performance Mode",
@@ -6945,6 +7090,9 @@
         gameContainer.classList.add('screenFading');
         screenTransition.classList.remove('leave');
         screenTransition.classList.remove('active');
+        for (let i = 1; i <= 10; i++) screenTransition.classList.remove(`transitionStyle${i}`);
+        const transitionStyle = 1 + Math.floor(Math.random() * 10);
+        screenTransition.classList.add(`transitionStyle${transitionStyle}`);
         void screenTransition.offsetWidth;
         screenTransition.classList.add('active');
         setTimeout(() => {
@@ -6955,8 +7103,8 @@
                 screenTransition.classList.remove('leave');
                 gameContainer.classList.remove('screenFading');
                 screenTransitioning = false;
-            }, 900);
-        }, 750);
+            }, 520);
+        }, 460);
     }
 
     function getSavedRunPromptButtons() {
@@ -10923,5 +11071,167 @@
     updateSettingsButtonsVisibility();
 })();
 </script>
+
+<style id="elemental-performance-and-pill-fix">
+/* Rounded, capsule-shaped play mode buttons, including the Back button. */
+#playModeOverlay .menuActionButtons .btn,
+#playModeOverlay #btnSoloMode,
+#playModeOverlay #btnOnlineMode,
+#playModeOverlay #btnCancelPlayMode {
+  border-radius:999px !important;
+  min-height:4.2rem;
+  padding:1rem 1.8rem;
+}
+#playModeOverlay .menuActionButtons .btn::before,
+#playModeOverlay .menuActionButtons .btn::after { border-radius:inherit; }
+
+/* Keep screen transitions GPU-friendly: no full-scene blur, filters or giant shadows. */
+#gameContainer.screenFading > :not(#screenTransition) {
+  filter:none !important;
+  transition:none !important;
+}
+.screenTransition[class*="transitionStyle"] {
+  box-shadow:none !important;
+  filter:none !important;
+  will-change:transform,opacity;
+  contain:paint;
+  backface-visibility:hidden;
+}
+.screenTransition[class*="transitionStyle"]::before {
+  filter:none !important;
+  mix-blend-mode:normal !important;
+  animation:elementalLiteDrift .46s ease-in-out both !important;
+}
+.screenTransition[class*="transitionStyle"].active { animation-duration:.46s !important; }
+.screenTransition[class*="transitionStyle"].leave { animation-duration:.52s !important; }
+@keyframes elementalLiteDrift {
+  0% { transform:translate3d(0,2%,0) scale(1); opacity:.68; }
+  55% { opacity:1; }
+  100% { transform:translate3d(0,-1%,0) scale(1.025); opacity:.92; }
+}
+
+/* 1 FIRE — layered flame tongues, hot core and ember streaks. */
+.screenTransition.transitionStyle1 {
+ background:
+   radial-gradient(ellipse at 50% 110%,#fff7b0 0 4%,#ffb21a 12%,#e84408 30%,#75130a 52%,#16070a 78%,#030408 100%) !important;
+}
+.screenTransition.transitionStyle1::before {
+ background:
+   radial-gradient(ellipse at 18% 100%,rgba(255,230,93,.95) 0 5%,rgba(255,79,9,.8) 13%,transparent 31%),
+   radial-gradient(ellipse at 42% 105%,rgba(255,248,181,.95) 0 4%,rgba(255,115,8,.88) 14%,transparent 33%),
+   radial-gradient(ellipse at 67% 108%,rgba(255,203,49,.9) 0 5%,rgba(222,39,6,.8) 15%,transparent 34%),
+   radial-gradient(ellipse at 88% 104%,rgba(255,150,23,.9) 0 4%,rgba(150,22,5,.8) 16%,transparent 35%),
+   repeating-linear-gradient(174deg,transparent 0 9%,rgba(255,177,28,.18) 10%,transparent 12% 19%) !important;
+  inset:-8% -2% !important;
+}
+/* 2 ICE — translucent ice sheets, crystalline fracture lines and cold blue depth. */
+.screenTransition.transitionStyle2 {
+ background:radial-gradient(ellipse at 50% 40%,#efffff 0,#9befff 9%,#237da9 28%,#0b2c55 57%,#030914 100%) !important;
+}
+.screenTransition.transitionStyle2::before {
+ background:
+  linear-gradient(132deg,transparent 0 26%,rgba(238,255,255,.95) 26.2% 26.5%,rgba(73,209,255,.5) 26.8% 27.4%,transparent 27.8% 100%),
+  linear-gradient(42deg,transparent 0 47%,rgba(222,253,255,.8) 47.2% 47.45%,transparent 47.8% 100%),
+  linear-gradient(100deg,transparent 0 68%,rgba(163,243,255,.75) 68.2% 68.55%,transparent 69% 100%),
+  repeating-linear-gradient(60deg,transparent 0 19%,rgba(205,250,255,.12) 19.2% 19.5%,transparent 20% 34%) !important;
+}
+/* 3 NATURE — deep forest green, leaf silhouettes and branching vines. */
+.screenTransition.transitionStyle3 {
+ background:radial-gradient(ellipse at 50% 48%,#b7ee70 0,#2c9a43 16%,#0c4828 42%,#03180e 76%,#010603 100%) !important;
+}
+.screenTransition.transitionStyle3::before {
+ background:
+  radial-gradient(ellipse at 18% 22%,rgba(119,231,83,.9) 0 3%,transparent 4%),
+  radial-gradient(ellipse at 24% 30%,rgba(39,135,51,.95) 0 5%,transparent 6%),
+  radial-gradient(ellipse at 78% 68%,rgba(135,226,79,.85) 0 4%,transparent 5%),
+  linear-gradient(68deg,transparent 0 39%,rgba(24,91,39,.9) 39.3% 40%,transparent 40.3% 100%),
+  linear-gradient(112deg,transparent 0 61%,rgba(57,143,47,.88) 61.3% 61.8%,transparent 62.1% 100%),
+  repeating-linear-gradient(72deg,transparent 0 18%,rgba(165,255,106,.14) 18.2% 18.6%,transparent 19% 32%) !important;
+}
+/* 4 LIGHTNING — dark storm clouds with sharply defined electric branches. */
+.screenTransition.transitionStyle4 {
+ background:radial-gradient(ellipse at 50% 45%,#254c8a 0,#0b1d40 38%,#030817 75%,#01030a 100%) !important;
+}
+.screenTransition.transitionStyle4::before {
+ background:
+  linear-gradient(116deg,transparent 0 42%,#dfffff 42.2% 42.7%,#55dfff 43% 43.4%,transparent 43.8% 100%),
+  linear-gradient(66deg,transparent 0 56%,rgba(222,253,255,.98) 56.2% 56.45%,#39bfff 56.7% 57%,transparent 57.4% 100%),
+  linear-gradient(124deg,transparent 0 25%,rgba(123,219,255,.7) 25.2% 25.45%,transparent 25.8% 100%),
+  radial-gradient(ellipse at 48% 45%,rgba(104,202,255,.3),transparent 40%) !important;
+}
+/* 5 SHADOW — layered black mist and a dim crimson tear in the void. */
+.screenTransition.transitionStyle5 {
+ background:radial-gradient(ellipse at 52% 50%,#3a101d 0,#170b13 27%,#07060b 61%,#000 100%) !important;
+}
+.screenTransition.transitionStyle5::before {
+ background:
+  radial-gradient(ellipse at 50% 50%,transparent 0 20%,rgba(106,10,36,.48) 39%,transparent 62%),
+  linear-gradient(95deg,transparent 0 46%,rgba(190,22,55,.55) 49%,rgba(255,66,80,.75) 50%,rgba(97,0,30,.55) 51%,transparent 55% 100%),
+  radial-gradient(ellipse at 20% 80%,rgba(68,36,53,.45),transparent 38%),
+  radial-gradient(ellipse at 85% 22%,rgba(43,30,52,.55),transparent 34%) !important;
+}
+/* 6 CRYSTAL — hard-edged facets and bright glints, with no expensive blend effects. */
+.screenTransition.transitionStyle6 {
+ background:linear-gradient(130deg,#061a35 0%,#1d6e8a 17%,#b6fbff 26%,#3d5794 39%,#f4ffff 48%,#7b5eb4 60%,#142a52 78%,#020713 100%) !important;
+}
+.screenTransition.transitionStyle6::before {
+ background:
+  linear-gradient(45deg,transparent 0 28%,rgba(255,255,255,.75) 28.2% 28.5%,transparent 28.8% 100%),
+  linear-gradient(135deg,transparent 0 53%,rgba(220,255,255,.68) 53.2% 53.5%,transparent 53.8% 100%),
+  linear-gradient(75deg,transparent 0 70%,rgba(201,226,255,.55) 70.2% 70.6%,transparent 70.9% 100%),
+  repeating-linear-gradient(45deg,transparent 0 22%,rgba(255,255,255,.12) 22.2% 22.6%,transparent 23% 39%) !important;
+}
+/* 7 TOXIC — luminous acidic liquid pockets and hazy green chemical glow. */
+.screenTransition.transitionStyle7 {
+ background:radial-gradient(ellipse at 50% 46%,#dfff5c 0,#70d62c 12%,#21742d 33%,#092514 62%,#010602 100%) !important;
+}
+.screenTransition.transitionStyle7::before {
+ background:
+  radial-gradient(ellipse at 20% 32%,rgba(230,255,85,.88) 0 2%,rgba(122,255,41,.4) 5%,transparent 12%),
+  radial-gradient(ellipse at 70% 24%,rgba(196,255,72,.85) 0 3%,rgba(74,180,30,.35) 7%,transparent 15%),
+  radial-gradient(ellipse at 46% 72%,rgba(221,255,82,.78) 0 2%,rgba(102,226,35,.3) 6%,transparent 13%),
+  radial-gradient(ellipse at 85% 82%,rgba(145,255,51,.65) 0 3%,transparent 11%),
+  linear-gradient(110deg,transparent 20%,rgba(161,255,57,.16) 50%,transparent 80%) !important;
+}
+/* 8 OCEAN — layered dark water, aqua light rays and curved wave bands. */
+.screenTransition.transitionStyle8 {
+ background:radial-gradient(ellipse at 50% 0%,#8cffff 0,#087fa0 18%,#034466 43%,#011a31 72%,#000610 100%) !important;
+}
+.screenTransition.transitionStyle8::before {
+ background:
+  repeating-radial-gradient(ellipse at 50% 120%,transparent 0 24px,rgba(117,244,255,.42) 25px 27px,transparent 29px 49px),
+  linear-gradient(105deg,transparent 15%,rgba(88,240,255,.18) 36%,transparent 52%),
+  linear-gradient(75deg,transparent 42%,rgba(160,255,255,.16) 56%,transparent 73%) !important;
+}
+/* 9 COSMIC — deep-space nebula with small stars and a violet gas cloud. */
+.screenTransition.transitionStyle9 {
+ background:radial-gradient(ellipse at 56% 48%,#4a207f 0,#21134f 27%,#0b0b27 55%,#01020a 100%) !important;
+}
+.screenTransition.transitionStyle9::before {
+ background:
+  radial-gradient(circle at 12% 24%,#fff 0 1px,transparent 2px),
+  radial-gradient(circle at 28% 76%,#9dfbff 0 1.5px,transparent 2.5px),
+  radial-gradient(circle at 71% 20%,#fff 0 1px,transparent 2px),
+  radial-gradient(circle at 86% 65%,#ffb8ff 0 1.5px,transparent 2.5px),
+  radial-gradient(circle at 54% 42%,#fff 0 1px,transparent 2px),
+  radial-gradient(ellipse at 50% 50%,rgba(153,69,255,.38),transparent 55%),
+  radial-gradient(ellipse at 25% 75%,rgba(30,140,255,.18),transparent 45%) !important;
+}
+/* 10 SOLAR — molten orange corona and a bright white-hot central core. */
+.screenTransition.transitionStyle10 {
+ background:radial-gradient(circle at 50% 50%,#fffde6 0,#ffd55c 5%,#ff8a19 17%,#b52b08 35%,#45100b 57%,#10050a 78%,#000 100%) !important;
+}
+.screenTransition.transitionStyle10::before {
+ background:
+  repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,242,166,.72) 0deg 1deg,transparent 2deg 13deg),
+  radial-gradient(circle at 50% 50%,transparent 0 20%,rgba(255,170,39,.35) 22% 25%,transparent 31%) !important;
+  inset:0 !important;
+  mask-image:radial-gradient(circle at center,transparent 0 16%,#000 19% 66%,transparent 77%);
+}
+@media (prefers-reduced-motion:reduce) {
+ .screenTransition[class*="transitionStyle"]::before { animation:none !important; }
+}
+</style>
+
 </body>
 </html>

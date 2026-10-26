@@ -77,12 +77,15 @@ function startServer() {
     [SERVER_PATH],
     {
       cwd: path.dirname(SERVER_PATH),
-      env: {
-        ...process.env,
-        ELECTRON_RUN_AS_NODE: '1',
-        HOST: '0.0.0.0',
-        PORT: String(PORT)
-      },
+     env: {
+  ...process.env,
+  ELECTRON_RUN_AS_NODE: '1',
+  NODE_PATH: app.isPackaged
+    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
+    : path.join(__dirname, 'node_modules'),
+  HOST: '0.0.0.0',
+  PORT: String(PORT)
+},
       stdio: 'ignore',
       windowsHide: true
     }
