@@ -4,7 +4,8 @@ const fs = require('node:fs');
 const { spawn } = require('node:child_process');
 const net = require('node:net');
 
-app.setName('SNIPER CONTAMINATION');
+// Fix: Updated the application name casing to match your new branding
+app.setName('Sniper Contamination');
 
 // Separate production executable configuration from the development runtime cache
 if (app.isPackaged) {
@@ -14,7 +15,6 @@ if (app.isPackaged) {
   // Bumped dev mode to -v6 to force local environment sandbox updates
   app.setAppUserModelId('com.yourname.snipercontamination-dev-v6');
 }
-
 
 let serverProcess = null;
 let mainWindow = null;
@@ -137,6 +137,11 @@ async function createWindow() {
     }
   });
 
+  // 🔒 ULTIMATE FIX: Block the game server/HTML from changing the native top title bar casing
+  mainWindow.on('page-title-updated', (event) => {
+    event.preventDefault();
+  });
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
@@ -162,7 +167,8 @@ ipcMain.on('quit-app', () => {
 app.whenReady()
   .then(createWindow)
   .catch(error => {
-    console.error('Failed to launch SNIPER CONTAMINATION:', error);
+    // Fix: Updated error logging casing to match new brand name
+    console.error('Failed to launch Sniper Contamination:', error);
     app.quit();
   });
 

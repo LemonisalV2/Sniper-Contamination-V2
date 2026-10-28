@@ -1,10 +1,10 @@
 {
   "name": "sniper-contamination-game",
-  "productName": "SNIPER CONTAMINATION",
+  "productName": "Sniper Contamination",
   "version": "1.0.1",
   "private": true,
-  "description": "SNIPER CONTAMINATION game with room-based online co-op",
-  "author": "Your Name",
+  "description": "Sniper Contamination",
+  "author": "LemonisalV2",
   "main": "main.js",
   "scripts": {
     "start": "nodemon --ext js,html,css,json --exec \"node server.js & electron .\"",
@@ -14,7 +14,7 @@
   },
   "build": {
     "appId": "com.yourname.snipercontaminationgame",
-    "productName": "SNIPER CONTAMINATION",
+    "productName": "Sniper Contamination",
     "directories": {
       "output": "C:/SniperBuildNew"
     },
