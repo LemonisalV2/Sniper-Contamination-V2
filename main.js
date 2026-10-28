@@ -1,4 +1,3 @@
-
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
@@ -6,7 +5,16 @@ const { spawn } = require('node:child_process');
 const net = require('node:net');
 
 app.setName('SNIPER CONTAMINATION');
-app.setAppUserModelId('com.yourname.snipercontamination');
+
+// Separate production executable configuration from the development runtime cache
+if (app.isPackaged) {
+  // Bumped to -v3 to break deep Windows registry caching rules for your logo icon
+  app.setAppUserModelId('com.yourname.snipercontamination.main-v3');
+} else {
+  // Bumped dev mode to -v6 to force local environment sandbox updates
+  app.setAppUserModelId('com.yourname.snipercontamination-dev-v6');
+}
+
 
 let serverProcess = null;
 let mainWindow = null;
@@ -19,6 +27,11 @@ const SERVER_URL = `http://${HOST}:${PORT}`;
 const SERVER_PATH = app.isPackaged
   ? path.join(process.resourcesPath, 'app.asar.unpacked', 'server.js')
   : path.join(__dirname, 'server.js');
+
+// Dynamically handles the runtime window shell icon based on production status
+const ICON_PATH = app.isPackaged
+  ? path.join(__dirname, 'icon.ico') // inside the app.asar bundle at runtime
+  : path.join(__dirname, 'icon.ico'); // local root folder during testing
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -77,15 +90,15 @@ function startServer() {
     [SERVER_PATH],
     {
       cwd: path.dirname(SERVER_PATH),
-     env: {
-  ...process.env,
-  ELECTRON_RUN_AS_NODE: '1',
-  NODE_PATH: app.isPackaged
-    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
-    : path.join(__dirname, 'node_modules'),
-  HOST: '0.0.0.0',
-  PORT: String(PORT)
-},
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: '1',
+        NODE_PATH: app.isPackaged
+          ? path.join(process.resourcesPath, 'app.asar.unpacked', 'node_modules')
+          : path.join(__dirname, 'node_modules'),
+        HOST: '0.0.0.0',
+        PORT: String(PORT)
+      },
       stdio: 'ignore',
       windowsHide: true
     }
@@ -117,7 +130,7 @@ async function createWindow() {
     height: 720,
     backgroundColor: '#02040a',
     autoHideMenuBar: true,
-    icon: path.join(__dirname, 'icon.ico'),
+    icon: ICON_PATH, // <--- UPDATED VARIABLE TO GRAB ACCURATE RUNTIME PATH
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true

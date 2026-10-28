@@ -1,20 +1,22 @@
 {
-  "name": "sniper-contamination",
+  "name": "sniper-contamination-game",
   "productName": "SNIPER CONTAMINATION",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "SNIPER CONTAMINATION game with room-based online co-op",
+  "author": "Your Name",
   "main": "main.js",
   "scripts": {
     "start": "nodemon --ext js,html,css,json --exec \"node server.js & electron .\"",
     "app": "electron .",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "dist:fast": "electron-builder --win --dir"
   },
   "build": {
-    "appId": "com.yourname.snipercontamination",
+    "appId": "com.yourname.snipercontaminationgame",
     "productName": "SNIPER CONTAMINATION",
     "directories": {
-      "output": "C:/SniperBuild"
+      "output": "C:/SniperBuildNew"
     },
     "asarUnpack": [
       "server.js",
@@ -32,12 +34,17 @@
       "index.html",
       "*.png",
       "*.mp3",
-      "icon.ico",
       "node_modules/**"
     ],
     "win": {
       "target": "nsis",
       "icon": "icon.ico"
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "installerIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico"
     }
   },
   "dependencies": {
@@ -46,7 +53,8 @@
   "type": "commonjs",
   "devDependencies": {
     "electron": "^45.0.0",
-    "electron-builder": "^26.15.3",
-    "nodemon": "^3.1.14"
+    "electron-builder": "^26.18.0",
+    "nodemon": "^3.1.14",
+    "png-to-ico": "^3.0.2"
   }
 }
