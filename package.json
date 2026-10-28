@@ -41,10 +41,24 @@
       "icon": "icon.ico"
     },
     "nsis": {
-      "oneClick": true,
-      "allowToChangeInstallationDirectory": false,
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerSidebar": "sniper-contamination-sidebar-v2.bmp",
       "installerIcon": "icon.ico",
-      "uninstallerIcon": "icon.ico"
+      "uninstallerIcon": "icon.ico",
+      "include": "installer.nsh",
+      "displayLanguageSelector": true,
+      "installerLanguages": [
+        "en_US",
+        "zh_CN",
+        "es_ES",
+        "it_IT",
+        "fr_FR",
+        "ru_RU",
+        "ja_JP",
+        "de_DE",
+        "pt_BR"
+      ]
     }
   },
   "dependencies": {
