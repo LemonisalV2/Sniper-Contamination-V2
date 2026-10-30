@@ -1,6 +1,6 @@
 
 ; SNIPER CONTAMINATION
-; Custom NSIS welcome page
+; Custom installer welcome page
 
 !macro customWelcomePage
   !define MUI_WELCOMEPAGE_TITLE "SNIPER CONTAMINATION"

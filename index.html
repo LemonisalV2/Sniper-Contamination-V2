@@ -12446,6 +12446,656 @@
         }
     </style>
 
+
+    <style id="sniper-cinematic-intro">
+        /* SNIPER CONTAMINATION — arcade combat menu scene */
+        #menu {
+            isolation: isolate;
+            overflow: hidden;
+            background: transparent !important;
+        }
+
+        #menu::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 48%, rgba(0, 26, 18, .30), rgba(0, 0, 0, .56) 58%, rgba(0, 0, 0, .82)),
+                linear-gradient(rgba(35, 255, 145, .045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(35, 255, 145, .045) 1px, transparent 1px);
+            background-size: auto, 44px 44px, 44px 44px;
+            mask-image: linear-gradient(transparent, #000 12% 88%, transparent);
+        }
+
+        #scMenuCombatCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            display: block;
+            background: transparent !important;
+        }
+
+        #menu> :not(#scMenuCombatCanvas) {
+            z-index: 3;
+        }
+
+        #menu>#titleMain,
+        #menu .sc-title-wrap {
+            position: relative;
+        }
+
+        #menu .sc-title-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            isolation: isolate;
+        }
+
+        #menu .sc-title-wrap::before {
+            content: "";
+            position: absolute;
+            z-index: -1;
+            inset: -35px -70px -28px;
+            pointer-events: none;
+            background: radial-gradient(ellipse, rgba(0, 18, 12, .78), rgba(0, 8, 8, .32) 58%, transparent 76%);
+            opacity: .9;
+        }
+
+        #menu .sc-intro-kicker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 0 12px;
+            color: #a7ffd0;
+            font: 800 clamp(.58rem, 1.05vw, .78rem)/1.2 "Segoe UI", sans-serif;
+            letter-spacing: .34em;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(0, 255, 120, .8);
+            opacity: .88;
+        }
+
+        #menu .sc-intro-kicker::before,
+        #menu .sc-intro-kicker::after {
+            content: "";
+            width: clamp(22px, 5vw, 62px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #00ff80);
+            box-shadow: 0 0 9px #00ff80;
+        }
+
+        #menu .sc-intro-kicker::after {
+            transform: rotate(180deg);
+        }
+
+        #menu #titleMain {
+            position: relative;
+            margin-top: 0;
+            margin-bottom: 1.35rem;
+            max-width: 94vw;
+            line-height: 1.06;
+            text-wrap: balance;
+            font-size: clamp(2rem, 5.5vw, 4.25rem);
+            letter-spacing: clamp(.07rem, .55vw, .34rem);
+            color: #d9ffe7;
+            -webkit-text-stroke: 1px rgba(0, 255, 120, .2);
+            text-shadow:
+                0 0 5px rgba(218, 255, 230, .8),
+                0 0 16px rgba(0, 255, 102, .92),
+                0 0 38px rgba(0, 255, 102, .48),
+                0 5px 0 rgba(0, 35, 17, .9);
+        }
+
+        #menu .sc-intro-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: -7px 0 17px;
+            color: rgba(190, 255, 218, .72);
+            font: 700 .65rem/1.2 ui-monospace, Consolas, monospace;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+        }
+
+        #menu .sc-intro-status i {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00ff75;
+            box-shadow: 0 0 10px #00ff75;
+            animation: scStatusBlink 1.1s steps(2, end) infinite;
+        }
+
+        #menu .buttonRow {
+            gap: 1rem;
+            margin-top: .4rem;
+        }
+
+        #menu .buttonRow .btn {
+            min-width: 142px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        #menu .buttonRow .btnPlay {
+            box-shadow: 0 0 16px rgba(0, 255, 102, .85), 0 0 40px rgba(0, 255, 102, .35), inset 0 1px rgba(255, 255, 255, .5);
+        }
+
+        #menu .buttonRow .btnSettings {
+            border: 1px solid rgba(255, 255, 255, .65);
+            box-shadow: 0 0 16px rgba(220, 240, 255, .35), inset 0 1px rgba(255, 255, 255, .5);
+        }
+
+        #menu.scIntroActive .sc-intro-kicker {
+            animation: scKickerEnter .8s .25s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        #menu.scIntroActive #titleMain {
+            animation: scTitleEnter 1.25s .55s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        #menu.scIntroActive .sc-intro-status {
+            animation: scStatusEnter .65s 1.35s ease-out both;
+        }
+
+        #menu.scIntroActive .buttonRow .btn {
+            animation: scButtonEnter .8s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        #menu.scIntroActive .buttonRow .btn:nth-child(1) {
+            animation-delay: 1.65s;
+        }
+
+        #menu.scIntroActive .buttonRow .btn:nth-child(2) {
+            animation-delay: 1.82s;
+        }
+
+        #menu.scIntroActive .buttonRow .btn:nth-child(3) {
+            animation-delay: 1.95s;
+        }
+
+        #menu.scIntroActive #btnMenuQuit {
+            animation: scQuitEnter .65s .9s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        @keyframes scKickerEnter {
+            from {
+                opacity: 0;
+                transform: translateY(-24px);
+                letter-spacing: .8em;
+                filter: blur(5px);
+            }
+
+            to {
+                opacity: .88;
+                transform: translateY(0);
+                letter-spacing: .34em;
+                filter: blur(0);
+            }
+        }
+
+        @keyframes scTitleEnter {
+            0% {
+                opacity: 0;
+                transform: perspective(700px) rotateX(48deg) translateY(42px) scale(.78);
+                filter: blur(14px) brightness(2.5);
+                clip-path: inset(0 50% 0 50%);
+            }
+
+            58% {
+                opacity: 1;
+                transform: perspective(700px) rotateX(-7deg) translateY(-5px) scale(1.035);
+                filter: blur(0) brightness(1.65);
+                clip-path: inset(0 -5% 0 -5%);
+            }
+
+            76% {
+                transform: perspective(700px) rotateX(2deg) scale(.99);
+                filter: brightness(1.1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: perspective(700px) rotateX(0) translateY(0) scale(1);
+                filter: brightness(1);
+                clip-path: inset(0 -5% 0 -5%);
+            }
+        }
+
+        @keyframes scStatusEnter {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+                letter-spacing: .4em;
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                letter-spacing: .18em;
+            }
+        }
+
+        @keyframes scButtonEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(42px) scale(.82);
+                filter: blur(8px);
+            }
+
+            72% {
+                opacity: 1;
+                transform: translateY(-5px) scale(1.045);
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes scQuitEnter {
+            from {
+                opacity: 0;
+                transform: translateX(-28px) rotate(-35deg) scale(.6);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0) rotate(0) scale(1);
+            }
+        }
+
+        @keyframes scStatusBlink {
+            50% {
+                opacity: .35;
+            }
+        }
+
+        @media (max-width: 650px) {
+            #menu .buttonRow {
+                gap: .65rem;
+            }
+
+            #menu .buttonRow .btn {
+                min-width: 125px;
+                padding: .75rem 1.3rem;
+            }
+
+            #menu .sc-intro-kicker {
+                letter-spacing: .18em;
+            }
+
+            #menu .sc-intro-status {
+                font-size: .55rem;
+                letter-spacing: .1em;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            #menu.scIntroActive .sc-intro-kicker,
+            #menu.scIntroActive #titleMain,
+            #menu.scIntroActive .sc-intro-status,
+            #menu.scIntroActive .buttonRow .btn,
+            #menu.scIntroActive #btnMenuQuit {
+                animation-duration: .01ms !important;
+                animation-delay: 0ms !important;
+            }
+
+            #menu .sc-intro-status i {
+                animation: none;
+            }
+        }
+    </style>
+
+
+    <script id="sniper-cinematic-menu-scene">
+        (() => {
+            "use strict";
+            const menu = document.getElementById("menu");
+            if (!menu || menu.dataset.scCinematicReady === "1") return;
+            menu.dataset.scCinematicReady = "1";
+
+            const title = document.getElementById("titleMain");
+            if (title) {
+                const wrap = title.parentElement;
+                if (wrap) {
+                    wrap.classList.add("sc-title-wrap");
+                    const kicker = document.createElement("div");
+                    kicker.className = "sc-intro-kicker";
+                    kicker.textContent = "TACTICAL RESPONSE UNIT";
+                    wrap.insertBefore(kicker, title);
+                    const status = document.createElement("div");
+                    status.className = "sc-intro-status";
+                    status.innerHTML = "<i></i><span>CONTAINMENT BREACH // LIVE COMBAT ZONE</span>";
+                    title.insertAdjacentElement("afterend", status);
+                }
+            }
+
+            const canvas = document.createElement("canvas");
+            canvas.id = "scMenuCombatCanvas";
+            canvas.setAttribute("aria-hidden", "true");
+            menu.insertBefore(canvas, menu.firstChild);
+            const ctx = canvas.getContext("2d", { alpha: true });
+            if (!ctx) return;
+
+            const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            let width = 1, height = 1, dpr = 1, lastFrame = 0, elapsed = 0;
+            let running = true;
+            const rand = (a, b) => a + Math.random() * (b - a);
+            const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+            const actors = [];
+            const menuSnipers = [];
+            const bullets = [];
+            const particles = [];
+            const impacts = [];
+            const shapes = [];
+            const MAX_PARTICLES = 55;
+
+            function resize() {
+                const rect = menu.getBoundingClientRect();
+                width = Math.max(1, rect.width);
+                height = Math.max(1, rect.height);
+                dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                canvas.width = Math.round(width * dpr);
+                canvas.height = Math.round(height * dpr);
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                seedScene();
+            }
+            function seedScene() {
+                actors.length = 0;
+                const count = width < 600 ? 4 : 7;
+                for (let i = 0; i < count; i++) {
+                    actors.push({
+                        x: rand(-width * .1, width * 1.1),
+                        y: height * rand(.59, .88),
+                        scale: rand(.65, 1.18),
+                        speed: rand(13, 32) * (Math.random() < .5 ? -1 : 1),
+                        phase: rand(0, Math.PI * 2),
+                        dodgeAt: rand(1, 6),
+                        dodge: 0,
+                        variant: Math.random() < .7 ? 0 : (Math.random() < .5 ? 1 : 2)
+                    });
+                }
+                // Menu characters use the same abstract orb avatars and sniper shapes
+                // as the actual game: no invented human soldiers or rifle characters.
+                menuSnipers.length = 0;
+                const sniperKinds = [
+                    { kind: "circle", color: "#00ff66" },
+                    { kind: "circle", color: "#ff0033" },
+                    { kind: "circle", color: "#ff9f1a" },
+                    { kind: "triangle", color: "#a855f7" },
+                    { kind: "circle", color: "#1d9bf0" },
+                    { kind: "star", color: "#facc15" }
+                ];
+                for (let i = 0; i < (width < 600 ? 4 : 7); i++) {
+                    const type = sniperKinds[i % sniperKinds.length];
+                    menuSnipers.push({
+                        ...type, x: rand(width * .08, width * .92),
+                        y: rand(height * .22, height * .58), radius: rand(8, 13),
+                        vx: rand(-22, 22), vy: rand(-12, 12),
+                        phase: rand(0, Math.PI * 2), shotAt: rand(.4, 2.5),
+                        target: i % Math.max(1, actors.length)
+                    });
+                }
+                shapes.length = 0;
+                for (let i = 0; i < 13; i++) {
+                    shapes.push({ x: rand(0, width), y: rand(0, height), size: rand(5, 22), rot: rand(0, 6.28), spin: rand(-.25, .25), alpha: rand(.08, .22) });
+                }
+            }
+            function line(x1, y1, x2, y2, color, alpha = 1, lw = 1) {
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lw;
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+            function drawBackground(t) {
+                const glow = ctx.createRadialGradient(width * .5, height * .53, 10, width * .5, height * .53, Math.max(width, height) * .72);
+                glow.addColorStop(0, "rgba(0,65,37,.22)");
+                glow.addColorStop(.55, "rgba(0,23,19,.12)");
+                glow.addColorStop(1, "rgba(0,0,0,0)");
+                ctx.fillStyle = glow; ctx.fillRect(0, 0, width, height);
+
+                // Subtle perspective grid, kept faint so the menu remains readable.
+                ctx.save();
+                ctx.strokeStyle = "rgba(43,255,143,.10)";
+                ctx.lineWidth = 1;
+                const horizon = height * .58;
+                for (let i = 0; i < 13; i++) {
+                    const x = (i / 12) * width;
+                    ctx.beginPath(); ctx.moveTo(width * .5, horizon); ctx.lineTo(x, height); ctx.stroke();
+                }
+                for (let i = 0; i < 7; i++) {
+                    const p = (i / 6);
+                    const y = horizon + p * p * (height - horizon);
+                    ctx.globalAlpha = .08 + p * .08;
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+                }
+                ctx.restore();
+
+                // Floating wireframe fragments.
+                for (const sh of shapes) {
+                    sh.rot += sh.spin * .006;
+                    ctx.save(); ctx.translate(sh.x, sh.y); ctx.rotate(sh.rot);
+                    ctx.globalAlpha = sh.alpha;
+                    ctx.strokeStyle = "#57ffad"; ctx.lineWidth = 1;
+                    ctx.strokeRect(-sh.size / 2, -sh.size / 2, sh.size, sh.size);
+                    ctx.beginPath(); ctx.moveTo(-sh.size * .7, 0); ctx.lineTo(sh.size * .7, 0); ctx.stroke();
+                    ctx.restore();
+                }
+                ctx.globalAlpha = 1;
+
+                // Distant architecture silhouettes.
+                const base = height * .66;
+                ctx.fillStyle = "rgba(1,10,12,.62)";
+                for (let i = 0; i < 9; i++) {
+                    const bw = width / 8;
+                    const x = i * bw - 2;
+                    const bh = height * (.08 + ((i * 37) % 9) / 100);
+                    ctx.fillRect(x, base - bh, bw - 3, bh + height * .34);
+                    ctx.fillStyle = "rgba(0,255,116,.12)";
+                    for (let w = 0; w < 2; w++) for (let h = 0; h < 3; h++) {
+                        ctx.fillRect(x + 8 + w * 12, base - bh + 10 + h * 14, 3, 5);
+                    }
+                    ctx.fillStyle = "rgba(1,10,12,.62)";
+                }
+                // Scan beam sweeps through the distant skyline.
+                const scanX = ((t * .075) % (width + 180)) - 90;
+                const beam = ctx.createLinearGradient(scanX - 55, 0, scanX + 55, 0);
+                beam.addColorStop(0, "rgba(0,255,120,0)");
+                beam.addColorStop(.5, "rgba(0,255,120,.055)");
+                beam.addColorStop(1, "rgba(0,255,120,0)");
+                ctx.fillStyle = beam; ctx.fillRect(scanX - 55, 0, 110, height);
+            }
+            function drawPlayerOrb(a, t) {
+                // Faithful to drawPlayerAvatar() in the game: a glowing, irregular
+                // circular energy player with the same green/blue/yellow palette.
+                const bob = Math.sin(t * .004 + a.phase) * 2.2;
+                const dodge = a.dodge > 0 ? Math.sin((1 - a.dodge) * Math.PI) * 17 : 0;
+                const x = a.x, y = a.y + bob + dodge, r = 10.5 * a.scale;
+                const sprintPulse = Math.sin(t * .02 + a.phase) > .35;
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(a.phase + t * .0007);
+                const g = ctx.createRadialGradient(-r * .2, -r * .25, 1, 0, 0, r * 1.25);
+                if (a.variant === 1) {
+                    g.addColorStop(0, "#ffffff"); g.addColorStop(.5, "#7dffad"); g.addColorStop(1, "#008a39");
+                } else if (a.variant === 2) {
+                    g.addColorStop(0, "#ffffff"); g.addColorStop(.5, "#63d5ff"); g.addColorStop(1, "#006bb3");
+                } else {
+                    g.addColorStop(0, sprintPulse ? "#fff0c2" : "#ffffaa");
+                    g.addColorStop(.5, sprintPulse ? "#ff9f1a" : "#ffee33");
+                    g.addColorStop(1, "#00ff66");
+                }
+                ctx.fillStyle = g;
+                ctx.shadowColor = a.variant === 2 ? "#00aaff" : "#00ff66";
+                ctx.shadowBlur = 15;
+                ctx.beginPath();
+                for (let i = 0; i < 32; i++) {
+                    const ang = i / 32 * Math.PI * 2;
+                    const rr = r * (.7 + .3 * Math.sin(ang * 3 + a.phase * 2));
+                    const px = Math.cos(ang) * rr, py = Math.sin(ang) * rr;
+                    if (!i) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.closePath(); ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = "rgba(235,255,245,.75)"; ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.restore();
+            }
+            function drawMenuSniper(s, t) {
+                // Matches the in-game sniper silhouettes: outlined circle, triangle,
+                // or star with a short aiming barrel extending from the centre.
+                const wobble = Math.sin(t * .002 + s.phase) * .06;
+                const target = actors[s.target % Math.max(1, actors.length)];
+                const aim = target ? Math.atan2(target.y - s.y, target.x - s.x) : Math.atan2(s.vy, s.vx);
+                ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(aim + wobble);
+                ctx.strokeStyle = s.color; ctx.fillStyle = s.kind === "triangle" ? "rgba(168,85,247,.13)" : s.kind === "star" ? "rgba(250,204,21,.14)" : "rgba(0,255,102,.07)";
+                ctx.lineWidth = 2.2; ctx.shadowColor = s.color; ctx.shadowBlur = 12;
+                ctx.beginPath();
+                if (s.kind === "triangle") {
+                    ctx.moveTo(0, -s.radius); ctx.lineTo(s.radius * .85, s.radius * .9); ctx.lineTo(-s.radius * .85, s.radius * .9); ctx.closePath();
+                } else if (s.kind === "star") {
+                    for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 - Math.PI / 2, rr = i % 2 === 0 ? s.radius : s.radius * .48; const x = Math.cos(a) * rr, y = Math.sin(a) * rr; if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath();
+                } else ctx.arc(0, 0, s.radius, 0, Math.PI * 2);
+                ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(s.radius + 8, 0); ctx.stroke();
+                ctx.restore();
+            }
+            function spawnShot() {
+                if (bullets.length > 8) return;
+                const fromLeft = Math.random() < .5;
+                const sx = fromLeft ? rand(15, width * .22) : rand(width * .78, width - 15);
+                const sy = rand(height * .25, height * .67);
+                const ex = fromLeft ? rand(width * .55, width * .92) : rand(width * .08, width * .45);
+                const ey = sy + rand(-height * .19, height * .19);
+                const dx = ex - sx, dy = ey - sy, len = Math.hypot(dx, dy) || 1;
+                bullets.push({ x: sx, y: sy, vx: dx / len * rand(520, 850), vy: dy / len * rand(520, 850), life: 0, max: len / rand(520, 850), color: Math.random() < .7 ? "#a6ffbf" : "#9beaff", trail: [] });
+            }
+            function update(dt, t) {
+                for (const a of actors) {
+                    a.x += a.speed * dt;
+                    if (a.x < -35) a.x = width + 30;
+                    if (a.x > width + 35) a.x = -30;
+                    if (t / 1000 > a.dodgeAt && a.dodge <= 0) {
+                        a.dodge = 1; a.dodgeAt = t / 1000 + rand(3.5, 7);
+                    }
+                    if (a.dodge > 0) a.dodge = Math.max(0, a.dodge - dt * 1.65);
+                }
+                for (const sniper of menuSnipers) {
+                    sniper.x += sniper.vx * dt;
+                    sniper.y += sniper.vy * dt;
+                    if (sniper.x < 18 || sniper.x > width - 18) sniper.vx *= -1;
+                    if (sniper.y < height * .16 || sniper.y > height * .59) sniper.vy *= -1;
+                    sniper.shotAt -= dt;
+                    if (!reducedMotion && sniper.shotAt <= 0 && bullets.length < 10) {
+                        const target = actors[sniper.target % Math.max(1, actors.length)];
+                        if (target) {
+                            const dx = target.x - sniper.x, dy = target.y - sniper.y, len = Math.hypot(dx, dy) || 1;
+                            const speed = rand(380, 560);
+                            bullets.push({ x: sniper.x + dx / len * (sniper.radius + 7), y: sniper.y + dy / len * (sniper.radius + 7), vx: dx / len * speed, vy: dy / len * speed, life: 0, max: Math.min(1.4, len / speed + .2), color: sniper.color, trail: [] });
+                        }
+                        sniper.shotAt = rand(1.4, 3.1);
+                        sniper.target = (sniper.target + 1) % Math.max(1, actors.length);
+                    }
+                }
+                if (!reducedMotion && Math.random() < dt * .35) spawnShot();
+                for (let i = bullets.length - 1; i >= 0; i--) {
+                    const b = bullets[i];
+                    b.life += dt;
+                    b.x += b.vx * dt; b.y += b.vy * dt;
+                    b.trail.push({ x: b.x, y: b.y });
+                    if (b.trail.length > 7) b.trail.shift();
+                    if (b.life > b.max || b.x < 0 || b.x > width || b.y < 0 || b.y > height) {
+                        impacts.push({ x: b.x, y: b.y, life: 0, max: .42, color: b.color });
+                        bullets.splice(i, 1);
+                    }
+                }
+                for (let i = impacts.length - 1; i >= 0; i--) {
+                    impacts[i].life += dt;
+                    if (impacts[i].life > impacts[i].max) impacts.splice(i, 1);
+                }
+                if (particles.length < MAX_PARTICLES && Math.random() < dt * 15) {
+                    particles.push({ x: rand(0, width), y: rand(0, height), vx: rand(-5, 5), vy: rand(-13, -3), life: 0, max: rand(3, 7), r: rand(.7, 2) });
+                }
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i]; p.life += dt; p.x += p.vx * dt; p.y += p.vy * dt;
+                    if (p.life > p.max || p.y < -10) particles.splice(i, 1);
+                }
+            }
+            function render(t) {
+                ctx.clearRect(0, 0, width, height);
+                drawBackground(t);
+                // Particles drift in front of the skyline.
+                for (const p of particles) {
+                    ctx.globalAlpha = (1 - p.life / p.max) * .48;
+                    ctx.fillStyle = "#8dffc0"; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                actors.sort((a, b) => a.y - b.y);
+                for (const a of actors) drawPlayerOrb(a, t);
+                for (const sniper of menuSnipers) drawMenuSniper(sniper, t);
+
+                // Flying rounds and luminous tracers.
+                for (const b of bullets) {
+                    for (let i = 1; i < b.trail.length; i++) {
+                        const p0 = b.trail[i - 1], p1 = b.trail[i];
+                        line(p0.x, p0.y, p1.x, p1.y, b.color, (i / b.trail.length) * .45, 1.4);
+                    }
+                    line(b.x - b.vx * .018, b.y - b.vy * .018, b.x, b.y, "#eafff1", .95, 2.2);
+                    ctx.fillStyle = b.color; ctx.shadowBlur = 12; ctx.shadowColor = b.color;
+                    ctx.beginPath(); ctx.arc(b.x, b.y, 2, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+                }
+                for (const p of impacts) {
+                    const k = p.life / p.max, r = 4 + k * 22;
+                    ctx.globalAlpha = 1 - k;
+                    ctx.strokeStyle = p.color; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(p.x, p.y, r * .45, 0, Math.PI * 2); ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+                // Small tactical reticles on the outer edges.
+                const pulse = .65 + Math.sin(t * .003) * .18;
+                for (const [x, y] of [[width * .12, height * .3], [width * .88, height * .36]]) {
+                    ctx.save(); ctx.translate(x, y); ctx.globalAlpha = .24 * pulse; ctx.strokeStyle = "#70ffae"; ctx.lineWidth = 1;
+                    ctx.beginPath(); ctx.arc(0, 0, 13, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(-21, 0); ctx.lineTo(-7, 0); ctx.moveTo(7, 0); ctx.lineTo(21, 0); ctx.moveTo(0, -21); ctx.lineTo(0, -7); ctx.moveTo(0, 7); ctx.lineTo(0, 21); ctx.stroke();
+                    ctx.restore();
+                }
+                // Vignette.
+                const vg = ctx.createRadialGradient(width * .5, height * .48, Math.min(width, height) * .22, width * .5, height * .48, Math.max(width, height) * .76);
+                vg.addColorStop(.55, "rgba(0,0,0,0)"); vg.addColorStop(1, "rgba(0,0,0,.55)");
+                ctx.fillStyle = vg; ctx.fillRect(0, 0, width, height);
+            }
+            function frame(now) {
+                if (!running) return;
+                requestAnimationFrame(frame);
+                if (document.hidden || menu.classList.contains("hidden")) return;
+                if (now - lastFrame < 30) return; // cap menu scene to ~33 FPS
+                const dt = Math.min(.045, (now - (lastFrame || now)) / 1000);
+                lastFrame = now; elapsed += dt * 1000;
+                update(dt, elapsed);
+                render(elapsed);
+            }
+            resize();
+            window.addEventListener("resize", resize, { passive: true });
+            document.addEventListener("visibilitychange", () => { lastFrame = 0; });
+            menu.classList.add("scIntroActive");
+            window.setTimeout(() => menu.classList.remove("scIntroActive"), 5200);
+            requestAnimationFrame(frame);
+        })();
+    </script>
+
 </body>
 
 </html>
