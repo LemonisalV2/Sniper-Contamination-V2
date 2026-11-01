@@ -3723,7 +3723,7 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
 
-        <div id="menu" class="menu">
+        <div id="menu" class="menu scIntroActive">
             <div class="batteryWidget" aria-label="Battery status">
                 <div class="batteryBody">
                     <div class="batteryFill"></div>
@@ -3736,8 +3736,10 @@
                 <span class="batteryPercent">--%</span>
             </div>
             <button id="btnMenuQuit" class="btn" type="button" aria-label="Quit"> </button>
-            <div>
+            <div class="sc-title-wrap">
+                <div class="sc-intro-kicker">TACTICAL RESPONSE UNIT</div>
                 <h1 id="titleMain">SNIPER CONTAMINATION</h1>
+                <div class="sc-intro-status"><i></i><span>CONTAINMENT BREACH // LIVE COMBAT ZONE</span></div>
                 <div class="buttonRow">
                     <button id="btnPlay" class="btn btnPlay">Play</button>
                     <button id="btnRumbleTest" class="btn btnNeon hidden">Rumble Test</button>
@@ -4815,6 +4817,208 @@
                 }
             };
 
+            const ONLINE_MODE_TEXT_KEYS = [
+                'playTitle', 'solo', 'online', 'back', 'queueTitle', 'chooseMatchType',
+                'battleMode', 'teamMode', 'chooseBattleSize', 'chooseTeamSize',
+                'battleDescription', 'teamDescription'
+            ];
+            const ONLINE_MODE_TEXT = {
+                en: ["Choose how to play", "Solo", "Online", "Back", "Choose an online mode", "Choose your match type", "BATTLE MODE", "TEAM MODE", "Choose battle size", "Choose team size", "Use standard weapons. Everyone has 100 HP; first to win five rounds wins.", "Work together and share oxygen, just like online co-op."],
+                zh: ["选择游戏模式", "单人", "在线", "返回", "选择在线模式", "选择比赛类型", "战斗模式", "团队模式", "选择战斗人数", "选择队伍人数", "使用标准武器。每人有 100 点生命值；率先赢得五回合即可获胜。", "与你的队友合作并共享氧气，规则与在线合作模式相同。"],
+                es: ["Elige cómo jugar", "En solitario", "En línea", "Volver", "Elige un modo en línea", "Elige el tipo de partida", "MODO BATALLA", "MODO EQUIPO", "Elige el tamaño de la batalla", "Elige el tamaño del equipo", "Usa armas estándar. Todos tienen 100 PS; gana quien venza primero cinco rondas.", "Colabora y comparte oxígeno, como en el modo cooperativo en línea."],
+                it: ["Scegli come giocare", "In solitaria", "Online", "Indietro", "Scegli una modalità online", "Scegli il tipo di partita", "MODALITÀ BATTAGLIA", "MODALITÀ SQUADRA", "Scegli la dimensione della battaglia", "Scegli la dimensione della squadra", "Usa armi standard. Tutti hanno 100 PS; vince chi conquista per primo cinque round.", "Collaborate e condividete l'ossigeno, come nella cooperativa online."],
+                fr: ["Choisissez comment jouer", "Solo", "En ligne", "Retour", "Choisissez un mode en ligne", "Choisissez le type de match", "MODE BATAILLE", "MODE ÉQUIPE", "Choisissez la taille de la bataille", "Choisissez la taille de l'équipe", "Utilisez des armes standard. Tout le monde a 100 PV ; le premier à gagner cinq manches remporte le match.", "Faites équipe et partagez l'oxygène, comme en coopération en ligne."],
+                ru: ["Выберите способ игры", "Одиночная", "Сетевая", "Назад", "Выберите сетевой режим", "Выберите тип матча", "РЕЖИМ БИТВЫ", "КОМАНДНЫЙ РЕЖИМ", "Выберите размер битвы", "Выберите размер команды", "Используйте стандартное оружие. У всех 100 ед. здоровья; победит тот, кто первым выиграет пять раундов.", "Работайте вместе и делитесь кислородом, как в сетевой совместной игре."],
+                ja: ["プレイ方法を選択", "ソロ", "オンライン", "戻る", "オンラインモードを選択", "対戦形式を選択", "バトルモード", "チームモード", "バトル人数を選択", "チーム人数を選択", "標準武器で戦います。全員の体力は100。先に5ラウンド勝った方が勝利です。", "オンライン協力プレイのように、協力して酸素を共有しましょう。"],
+                de: ["Wähle, wie du spielen möchtest", "Einzelspieler", "Online", "Zurück", "Wähle einen Online-Modus", "Wähle deinen Spieltyp", "KAMPFMODUS", "TEAMMODUS", "Wähle die Kampfgröße", "Wähle die Teamgröße", "Verwende Standardwaffen. Alle haben 100 TP; wer zuerst fünf Runden gewinnt, gewinnt das Match.", "Arbeitet zusammen und teilt Sauerstoff wie im Online-Koop."],
+                pt: ["Escolha como jogar", "Solo", "Online", "Voltar", "Escolha um modo online", "Escolha o tipo de partida", "MODO BATALHA", "MODO DE EQUIPE", "Escolha o tamanho da batalha", "Escolha o tamanho da equipe", "Use armas padrão. Todos têm 100 PV; vence quem ganhar cinco rodadas primeiro.", "Trabalhem juntos e compartilhem oxigênio, como no cooperativo online."],
+                ko: ["플레이 방식 선택", "솔로", "온라인", "뒤로", "온라인 모드 선택", "경기 유형 선택", "전투 모드", "팀 모드", "전투 인원 선택", "팀 인원 선택", "기본 무기를 사용합니다. 모두 체력 100이며, 먼저 5라운드를 이기면 승리합니다.", "온라인 협동처럼 함께 협력하고 산소를 나누세요."],
+                ar: ["اختر طريقة اللعب", "فردي", "عبر الإنترنت", "رجوع", "اختر نمطًا عبر الإنترنت", "اختر نوع المباراة", "نمط المعركة", "نمط الفريق", "اختر حجم المعركة", "اختر حجم الفريق", "استخدم الأسلحة القياسية. لدى الجميع 100 نقطة صحة؛ يفوز أول من يربح خمس جولات.", "تعاونوا وتقاسموا الأكسجين كما في اللعب التعاوني عبر الإنترنت."],
+                hi: ["खेलने का तरीका चुनें", "एकल", "ऑनलाइन", "वापस", "ऑनलाइन मोड चुनें", "मैच का प्रकार चुनें", "बैटल मोड", "टीम मोड", "बैटल का आकार चुनें", "टीम का आकार चुनें", "मानक हथियारों का उपयोग करें। सभी के पास 100 HP हैं; पाँच राउंड पहले जीतने वाला मैच जीतता है।", "ऑनलाइन सहकारी खेल की तरह साथ मिलकर काम करें और ऑक्सीजन साझा करें।"],
+                bn: ["খেলার ধরন বেছে নিন", "একক", "অনলাইন", "ফিরে যান", "একটি অনলাইন মোড বেছে নিন", "ম্যাচের ধরন বেছে নিন", "ব্যাটল মোড", "টিম মোড", "ব্যাটলের আকার বেছে নিন", "দলের আকার বেছে নিন", "সাধারণ অস্ত্র ব্যবহার করুন। সবার ১০০ HP; যে আগে পাঁচ রাউন্ড জিতবে, সে ম্যাচ জিতবে।", "অনলাইন কো-অপের মতো একসঙ্গে কাজ করুন এবং অক্সিজেন ভাগ করুন।"],
+                tr: ["Nasıl oynayacağını seç", "Tek oyunculu", "Çevrimiçi", "Geri", "Bir çevrimiçi mod seç", "Maç türünü seç", "SAVAŞ MODU", "TAKIM MODU", "Savaş boyutunu seç", "Takım boyutunu seç", "Standart silahları kullan. Herkesin 100 CP'si var; beş raundu ilk kazanan maçı alır.", "Çevrimiçi eşli oyundaki gibi birlikte çalışın ve oksijeni paylaşın."],
+                nl: ["Kies hoe je wilt spelen", "Alleen", "Online", "Terug", "Kies een onlinemodus", "Kies het wedstrijdtype", "GEVECHTMODUS", "TEAMMODUS", "Kies de gevechtsgrootte", "Kies de teamgrootte", "Gebruik standaardwapens. Iedereen heeft 100 HP; wie als eerste vijf rondes wint, wint de wedstrijd.", "Werk samen en deel zuurstof, net als in online coöp."],
+                sv: ["Välj hur du vill spela", "Enspelarläge", "Online", "Tillbaka", "Välj ett onlineläge", "Välj matchtyp", "STRIDSLÄGE", "LAGLÄGE", "Välj stridens storlek", "Välj lagets storlek", "Använd standardvapen. Alla har 100 HP; den som först vinner fem rundor vinner matchen.", "Samarbeta och dela syre, precis som i online-samarbetsläget."],
+                pl: ["Wybierz sposób gry", "Gra solo", "Online", "Wstecz", "Wybierz tryb online", "Wybierz typ meczu", "TRYB WALKI", "TRYB DRUŻYNOWY", "Wybierz wielkość bitwy", "Wybierz wielkość drużyny", "Używaj standardowej broni. Każdy ma 100 HP; wygrywa ten, kto pierwszy wygra pięć rund.", "Współpracujcie i dzielcie się tlenem, jak w grze kooperacyjnej online."],
+                uk: ["Виберіть спосіб гри", "Одиночна гра", "Мережева гра", "Назад", "Виберіть мережевий режим", "Виберіть тип матчу", "РЕЖИМ БИТВИ", "КОМАНДНИЙ РЕЖИМ", "Виберіть розмір битви", "Виберіть розмір команди", "Використовуйте стандартну зброю. У всіх 100 од. здоров'я; перемагає той, хто першим виграє п'ять раундів.", "Працюйте разом і діліться киснем, як у мережевій спільній грі."],
+                cs: ["Vyberte způsob hraní", "Sólo", "Online", "Zpět", "Vyberte online režim", "Vyberte typ zápasu", "BITEVNÍ REŽIM", "TÝMOVÝ REŽIM", "Vyberte velikost bitvy", "Vyberte velikost týmu", "Použijte standardní zbraně. Každý má 100 HP; vyhrává ten, kdo jako první vyhraje pět kol.", "Spolupracujte a sdílejte kyslík stejně jako v online kooperaci."],
+                el: ["Επιλέξτε τρόπο παιχνιδιού", "Solo", "Online", "Πίσω", "Επιλέξτε online λειτουργία", "Επιλέξτε τύπο αγώνα", "ΛΕΙΤΟΥΡΓΙΑ ΜΑΧΗΣ", "ΟΜΑΔΙΚΗ ΛΕΙΤΟΥΡΓΙΑ", "Επιλέξτε μέγεθος μάχης", "Επιλέξτε μέγεθος ομάδας", "Χρησιμοποιήστε τα τυπικά όπλα. Όλοι έχουν 100 HP· κερδίζει όποιος πάρει πρώτος πέντε γύρους.", "Συνεργαστείτε και μοιραστείτε οξυγόνο, όπως στη διαδικτυακή συνεργασία."],
+                he: ["בחרו איך לשחק", "יחיד", "מקוון", "חזרה", "בחרו מצב מקוון", "בחרו סוג משחק", "מצב קרב", "מצב קבוצתי", "בחרו גודל קרב", "בחרו גודל קבוצה", "השתמשו בנשק רגיל. לכולם 100 נקודות חיים; הראשון לנצח בחמישה סיבובים מנצח במשחק.", "עבדו יחד ושתפו חמצן, כמו במשחק שיתופי מקוון."],
+                th: ["เลือกวิธีเล่น", "เล่นคนเดียว", "ออนไลน์", "กลับ", "เลือกโหมดออนไลน์", "เลือกประเภทการแข่งขัน", "โหมดต่อสู้", "โหมดทีม", "เลือกขนาดการต่อสู้", "เลือกขนาดทีม", "ใช้อาวุธมาตรฐาน ทุกคนมีพลังชีวิต 100 แต้ม ผู้ที่ชนะครบห้ารอบก่อนจะเป็นผู้ชนะ", "ร่วมมือกันและแบ่งปันออกซิเจนเหมือนโหมดร่วมมือออนไลน์"],
+                vi: ["Chọn cách chơi", "Chơi đơn", "Trực tuyến", "Quay lại", "Chọn chế độ trực tuyến", "Chọn loại trận đấu", "CHẾ ĐỘ CHIẾN ĐẤU", "CHẾ ĐỘ ĐỘI", "Chọn quy mô trận đấu", "Chọn quy mô đội", "Dùng vũ khí tiêu chuẩn. Mỗi người có 100 HP; ai thắng năm hiệp trước sẽ thắng trận.", "Phối hợp và chia sẻ oxy như trong chế độ đồng đội trực tuyến."],
+                id: ["Pilih cara bermain", "Solo", "Online", "Kembali", "Pilih mode online", "Pilih jenis pertandingan", "MODE PERTARUNGAN", "MODE TIM", "Pilih ukuran pertarungan", "Pilih ukuran tim", "Gunakan senjata standar. Semua pemain memiliki 100 HP; yang pertama menang lima ronde memenangkan pertandingan.", "Bekerja sama dan berbagi oksigen seperti dalam mode kooperatif online."],
+                ro: ["Alege cum vrei să joci", "Solo", "Online", "Înapoi", "Alege un mod online", "Alege tipul meciului", "MOD BĂTALIE", "MOD ECHIPĂ", "Alege mărimea luptei", "Alege mărimea echipei", "Folosește arme standard. Toți au 100 HP; câștigă primul care ia cinci runde.", "Lucrați împreună și împărțiți oxigenul, ca în cooperarea online."],
+                hu: ["Válaszd ki, hogyan játszol", "Egyedül", "Online", "Vissza", "Válassz online módot", "Válaszd ki a meccs típusát", "CSATAMÓD", "CSAPATMÓD", "Válaszd ki a csata méretét", "Válaszd ki a csapat méretét", "Használj alapfegyvereket. Mindenkinek 100 életereje van; az nyer, aki először nyer öt kört.", "Dolgozzatok együtt és osszátok meg az oxigént, mint az online kooperatív módban."],
+                fi: ["Valitse pelitapa", "Yksinpeli", "Verkossa", "Takaisin", "Valitse verkkopelitila", "Valitse ottelutyyppi", "TAISTELUTILA", "JOUKKUETILA", "Valitse taistelun koko", "Valitse joukkueen koko", "Käytä vakioaseita. Kaikilla on 100 HP; viisi erää ensin voittanut voittaa ottelun.", "Toimikaa yhdessä ja jakakaa happea kuten verkon yhteistyöpelissä."],
+                da: ["Vælg, hvordan du vil spille", "Solo", "Online", "Tilbage", "Vælg en onlinetilstand", "Vælg kamptype", "KAMP-TILSTAND", "HOLDTILSTAND", "Vælg kampstørrelse", "Vælg holdstørrelse", "Brug standardvåben. Alle har 100 HP; den, der først vinder fem runder, vinder kampen.", "Samarbejd og del ilt ligesom i online co-op."],
+                no: ["Velg hvordan du vil spille", "Enkeltspiller", "Online", "Tilbake", "Velg en nettmodus", "Velg kamptype", "KAMP-MODUS", "LAG-MODUS", "Velg kampstørrelse", "Velg lagstørrelse", "Bruk standardvåpen. Alle har 100 HP; den som først vinner fem runder, vinner kampen.", "Samarbeid og del oksygen, akkurat som i online-samarbeid."],
+                sk: ["Vyberte si spôsob hrania", "Sólo", "Online", "Späť", "Vyberte online režim", "Vyberte typ zápasu", "REŽIM BITKY", "TÍMOVÝ REŽIM", "Vyberte veľkosť bitky", "Vyberte veľkosť tímu", "Používajte štandardné zbrane. Každý má 100 HP; vyhráva ten, kto prvý vyhrá päť kôl.", "Spolupracujte a zdieľajte kyslík ako v online kooperácii."],
+                sl: ["Izberite način igranja", "Samostojno", "Spletno", "Nazaj", "Izberite spletni način", "Izberite vrsto tekme", "NAČIN BITKE", "EKIPNI NAČIN", "Izberite velikost bitke", "Izberite velikost ekipe", "Uporabljajte običajno orožje. Vsi imajo 100 HP; zmaga tisti, ki prvi osvoji pet krogov.", "Sodelujte in delite kisik kot pri spletnem sodelovalnem igranju."],
+                sr: ["Izaberite način igranja", "Samostalno", "Na mreži", "Nazad", "Izaberite režim na mreži", "Izaberite tip meča", "BORBENI REŽIM", "TIMSKI REŽIM", "Izaberite veličinu borbe", "Izaberite veličinu tima", "Koristite standardno oružje. Svi imaju 100 HP; pobeđuje onaj ko prvi osvoji pet rundi.", "Sarađujte i delite kiseonik kao u timskoj igri na mreži."],
+                hr: ["Odaberi način igre", "Solo", "Online", "Natrag", "Odaberi online način", "Odaberi vrstu meča", "NAČIN BORBE", "TIMSKI NAČIN", "Odaberi veličinu borbe", "Odaberi veličinu tima", "Koristi standardno oružje. Svi imaju 100 HP; pobjeđuje onaj tko prvi osvoji pet rundi.", "Surađujte i dijelite kisik kao u online suradničkom načinu."],
+                bg: ["Изберете как да играете", "Самостоятелно", "Онлайн", "Назад", "Изберете онлайн режим", "Изберете тип мач", "БОЕН РЕЖИМ", "ОТБОРЕН РЕЖИМ", "Изберете размер на битката", "Изберете размер на отбора", "Използвайте стандартни оръжия. Всеки има 100 HP; печели този, който пръв спечели пет рунда.", "Работете заедно и споделяйте кислород, както в онлайн кооперативната игра."],
+                lt: ["Pasirinkite, kaip žaisti", "Vienam", "Prisijungus", "Atgal", "Pasirinkite internetinį režimą", "Pasirinkite mačo tipą", "MŪŠIO REŽIMAS", "KOMANDOS REŽIMAS", "Pasirinkite mūšio dydį", "Pasirinkite komandos dydį", "Naudokite standartinius ginklus. Visi turi 100 gyvybės taškų; laimi pirmas laimėjęs penkis raundus.", "Dirbkite kartu ir dalykitės deguonimi kaip internetiniame kooperaciniame režime."],
+                lv: ["Izvēlieties, kā spēlēt", "Vienatnē", "Tiešsaistē", "Atpakaļ", "Izvēlieties tiešsaistes režīmu", "Izvēlieties mača veidu", "KAUJAS REŽĪMS", "KOMANDAS REŽĪMS", "Izvēlieties kaujas lielumu", "Izvēlieties komandas lielumu", "Izmantojiet standarta ieročus. Visiem ir 100 veselības punktu; uzvar pirmais, kurš uzvar piecus raundus.", "Sadarbojieties un dalieties ar skābekli tāpat kā tiešsaistes kooperatīvajā spēlē."],
+                et: ["Vali, kuidas mängida", "Üksi", "Võrgus", "Tagasi", "Vali võrgumängu režiim", "Vali matši tüüp", "LAHINGUREŽIIM", "MEESKONNAREŽIIM", "Vali lahingu suurus", "Vali meeskonna suurus", "Kasuta tavalisi relvi. Kõigil on 100 elupunkti; matši võidab see, kes võidab esimesena viis vooru.", "Tegutsege koos ja jagage hapnikku nagu võrgukoostöömängus."],
+                is: ["Veldu hvernig þú vilt spila", "Einn", "Á netinu", "Til baka", "Veldu netham", "Veldu tegund leiks", "BARDAGAHAMUR", "LIÐSHAMUR", "Veldu stærð bardaga", "Veldu stærð liðs", "Notaðu venjuleg vopn. Allir hafa 100 HP; sá sem vinnur fyrst fimm umferðir vinnur leikinn.", "Vinnið saman og deilið súrefni eins og í samvinnuleik á netinu."],
+                af: ["Kies hoe jy wil speel", "Alleen", "Aanlyn", "Terug", "Kies 'n aanlynmodus", "Kies jou wedstrydtipe", "SLAGMODUS", "SPANMODUS", "Kies die grootte van die geveg", "Kies die grootte van die span", "Gebruik standaardwapens. Almal het 100 HP; die eerste een wat vyf rondtes wen, wen die wedstryd.", "Werk saam en deel suurstof, net soos in aanlyn samewerking."],
+                sq: ["Zgjidhni si të luani", "Solo", "Në internet", "Prapa", "Zgjidhni një mënyrë në internet", "Zgjidhni llojin e ndeshjes", "MËNYRA E BETEJËS", "MËNYRA E EKIPIT", "Zgjidhni madhësinë e betejës", "Zgjidhni madhësinë e ekipit", "Përdorni armë standarde. Të gjithë kanë 100 HP; fiton ai që merr i pari pesë raunde.", "Bashkëpunoni dhe ndani oksigjenin, si në lojën bashkëpunuese në internet."],
+                hy: ["Ընտրեք խաղալու ձևը", "Մենախաղ", "Առցանց", "Հետ", "Ընտրեք առցանց ռեժիմը", "Ընտրեք խաղի տեսակը", "ՄԱՐՏԻ ՌԵԺԻՄ", "ԹԻՄԱՅԻՆ ՌԵԺԻՄ", "Ընտրեք մարտի չափը", "Ընտրեք թիմի չափը", "Օգտագործեք ստանդարտ զենքեր։ Բոլորն ունեն 100 առողջություն․ հաղթում է հինգ փուլ առաջինը շահած խաղացողը։", "Համագործակցեք և կիսեք թթվածինը, ինչպես առցանց համատեղ խաղում։"],
+                az: ["Necə oynayacağınızı seçin", "Tək", "Onlayn", "Geri", "Onlayn rejim seçin", "Matç növünü seçin", "DÖYÜŞ REJİMİ", "KOMANDA REJİMİ", "Döyüş ölçüsünü seçin", "Komanda ölçüsünü seçin", "Standart silahlardan istifadə edin. Hər kəsin 100 sağlamlıq xalı var; beş raundu ilk qazanan matçı udur.", "Onlayn birgə oyunda olduğu kimi birlikdə işləyin və oksigeni paylaşın."],
+                be: ["Выберыце спосаб гульні", "Адзіночная", "Анлайн", "Назад", "Выберыце анлайн-рэжым", "Выберыце тып матча", "РЭЖЫМ БІТВЫ", "КАМАНДНЫ РЭЖЫМ", "Выберыце памер бітвы", "Выберыце памер каманды", "Выкарыстоўвайце стандартную зброю. Ва ўсіх 100 ачкоў здароўя; перамагае той, хто першым выйграе пяць раўндаў.", "Працуйце разам і дзяліцеся кіслародам, як у анлайн-кааператыўнай гульні."],
+                bs: ["Izaberite način igranja", "Samostalno", "Online", "Nazad", "Izaberite online režim", "Izaberite tip meča", "BORBENI REŽIM", "TIMSKI REŽIM", "Izaberite veličinu borbe", "Izaberite veličinu tima", "Koristite standardno oružje. Svi imaju 100 HP; pobjeđuje onaj ko prvi osvoji pet rundi.", "Sarađujte i dijelite kisik kao u online kooperativnoj igri."],
+                ca: ["Tria com vols jugar", "En solitari", "En línia", "Enrere", "Tria un mode en línia", "Tria el tipus de partida", "MODE DE BATALLA", "MODE D'EQUIP", "Tria la mida de la batalla", "Tria la mida de l'equip", "Fes servir armes estàndard. Tothom té 100 PV; guanya qui aconsegueix primer cinc rondes.", "Col·laboreu i compartiu oxigen, com en el mode cooperatiu en línia."],
+                eu: ["Aukeratu nola jokatu", "Bakarka", "Linean", "Atzera", "Aukeratu lineako modua", "Aukeratu partida mota", "BORROKA MODUA", "TALDE MODUA", "Aukeratu borrokaren tamaina", "Aukeratu taldearen tamaina", "Erabili ohiko armak. Denek 100 osasun-puntu dituzte; bost txanda lehenengo irabazten dituenak partida irabaziko du.", "Egin lan elkarrekin eta partekatu oxigenoa, lineako lankidetza-jokoan bezala."],
+                gl: ["Escolle como xogar", "En solitario", "En liña", "Atrás", "Escolle un modo en liña", "Escolle o tipo de partida", "MODO BATALLA", "MODO EQUIPO", "Escolle o tamaño da batalla", "Escolle o tamaño do equipo", "Usa armas estándar. Todos teñen 100 puntos de vida; gaña quen venza primeiro cinco roldas.", "Traballade xuntos e compartide osíxeno, como no modo cooperativo en liña."],
+                ka: ["აირჩიეთ თამაშის გზა", "ერთმოთამაშიანი", "ონლაინ", "უკან", "აირჩიეთ ონლაინ რეჟიმი", "აირჩიეთ მატჩის ტიპი", "ბრძოლის რეჟიმი", "გუნდური რეჟიმი", "აირჩიეთ ბრძოლის ზომა", "აირჩიეთ გუნდის ზომა", "გამოიყენეთ სტანდარტული იარაღი. ყველას აქვს 100 ჯანმრთელობა; იმარჯვებს ის, ვინც პირველს მოიგებს ხუთ რაუნდს.", "ითანამშრომლეთ და გაინაწილეთ ჟანგბადი, როგორც ონლაინ კოოპერატიულ თამაშში."],
+                gu: ["રમવાની રીત પસંદ કરો", "એકલ", "ઓનલાઇન", "પાછા", "ઓનલાઇન મોડ પસંદ કરો", "મેચનો પ્રકાર પસંદ કરો", "યુદ્ધ મોડ", "ટીમ મોડ", "યુદ્ધનું કદ પસંદ કરો", "ટીમનું કદ પસંદ કરો", "સામાન્ય હથિયારો વાપરો. દરેક પાસે 100 HP છે; જે પહેલા પાંચ રાઉન્ડ જીતે તે મેચ જીતે.", "ઓનલાઇન સહકારી રમતની જેમ સાથે કામ કરો અને ઓક્સિજન વહેંચો."],
+                ht: ["Chwazi kijan pou jwe", "Pou kont ou", "Sou entènèt", "Retounen", "Chwazi yon mòd sou entènèt", "Chwazi kalite match la", "MÒD BATAY", "MÒD EKIP", "Chwazi gwosè batay la", "Chwazi gwosè ekip la", "Sèvi ak zam nòmal. Tout moun gen 100 HP; premye moun ki genyen senk tou yo genyen match la.", "Travay ansanm epi pataje oksijèn, menm jan ak jwèt koperatif sou entènèt la."],
+                km: ["ជ្រើសរើសរបៀបលេង", "លេងម្នាក់ឯង", "អនឡាញ", "ត្រឡប់ក្រោយ", "ជ្រើសរើសរបៀបអនឡាញ", "ជ្រើសរើសប្រភេទការប្រកួត", "របៀបប្រយុទ្ធ", "របៀបក្រុម", "ជ្រើសរើសទំហំការប្រយុទ្ធ", "ជ្រើសរើសទំហំក្រុម", "ប្រើអាវុធស្តង់ដារ។ អ្នកគ្រប់គ្នាមាន HP 100; អ្នកឈ្នះប្រាំជុំមុនគេនឹងឈ្នះការប្រកួត។", "សហការគ្នា និងចែករំលែកអុកស៊ីសែន ដូចក្នុងការលេងសហការតាមអនឡាញ។"],
+                lo: ["ເລືອກວິທີຫຼິ້ນ", "ຄົນດຽວ", "ອອນລາຍ", "ກັບຄືນ", "ເລືອກໂໝດອອນລາຍ", "ເລືອກປະເພດການແຂ່ງຂັນ", "ໂໝດຕໍ່ສູ້", "ໂໝດທີມ", "ເລືອກຂະໜາດການຕໍ່ສູ້", "ເລືອກຂະໜາດທີມ", "ໃຊ້ອາວຸດມາດຕະຖານ. ທຸກຄົນມີ 100 HP; ຜູ້ທີ່ຊະນະຫ້າຮອບກ່ອນຈະຊະນະ.", "ຮ່ວມມືກັນແລະແບ່ງປັນອົກຊີເຈນ ເໝືອນການຫຼິ້ນຮ່ວມມືອອນລາຍ."],
+                mk: ["Изберете како да играте", "Соло", "Онлајн", "Назад", "Изберете онлајн режим", "Изберете тип на натпревар", "БОРБЕН РЕЖИМ", "ТИМСКИ РЕЖИМ", "Изберете големина на битката", "Изберете големина на тимот", "Користете стандардно оружје. Сите имаат 100 здравје; победува оној што прв ќе освои пет рунди.", "Соработувајте и споделувајте кислород како во онлајн кооперативната игра."],
+                ml: ["എങ്ങനെ കളിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക", "ഒറ്റയ്ക്ക്", "ഓൺലൈൻ", "തിരികെ", "ഓൺലൈൻ മോഡ് തിരഞ്ഞെടുക്കുക", "മത്സര തരം തിരഞ്ഞെടുക്കുക", "ബാറ്റിൽ മോഡ്", "ടീം മോഡ്", "ബാറ്റിൽ വലുപ്പം തിരഞ്ഞെടുക്കുക", "ടീം വലുപ്പം തിരഞ്ഞെടുക്കുക", "സാധാരണ ആയുധങ്ങൾ ഉപയോഗിക്കുക. എല്ലാവർക്കും 100 HP ഉണ്ട്; ആദ്യം അഞ്ച് റൗണ്ടുകൾ ജയിക്കുന്നയാൾ മത്സരത്തിൽ വിജയിക്കും.", "ഓൺലൈൻ സഹകരണ കളിയിലെന്നപോലെ ഒരുമിച്ച് പ്രവർത്തിക്കുകയും ഓക്സിജൻ പങ്കിടുകയും ചെയ്യുക."],
+                mr: ["कसे खेळायचे ते निवडा", "एकल", "ऑनलाइन", "मागे", "ऑनलाइन मोड निवडा", "सामन्याचा प्रकार निवडा", "युद्ध मोड", "संघ मोड", "युद्धाचा आकार निवडा", "संघाचा आकार निवडा", "मानक शस्त्रे वापरा. प्रत्येकाकडे 100 HP आहेत; प्रथम पाच फेऱ्या जिंकणारा सामना जिंकतो.", "ऑनलाइन सहकारी खेळाप्रमाणे एकत्र काम करा आणि ऑक्सिजन सामायिक करा."],
+                mn: ["Тоглох аргаа сонгоно уу", "Ганцаарчилсан", "Онлайн", "Буцах", "Онлайн горимоо сонгоно уу", "Тоглолтын төрлөө сонгоно уу", "ТУЛААНЫ ГОРИМ", "БАГИЙН ГОРИМ", "Тулааны хэмжээг сонгоно уу", "Багийн хэмжээг сонгоно уу", "Стандарт зэвсэг хэрэглэнэ. Бүгд 100 HP-тэй; таван үеийг түрүүлж хожсон нь тоглолтод ялна.", "Онлайн хамтын тоглоом шиг хамтран ажиллаж, хүчилтөрөгчөө хуваалцаарай."],
+                ne: ["खेल्ने तरिका छान्नुहोस्", "एकल", "अनलाइन", "पछाडि", "अनलाइन मोड छान्नुहोस्", "खेलको प्रकार छान्नुहोस्", "लडाइँ मोड", "टोली मोड", "लडाइँको आकार छान्नुहोस्", "टोलीको आकार छान्नुहोस्", "सामान्य हतियार प्रयोग गर्नुहोस्। सबैसँग १०० HP हुन्छ; पहिले पाँच चरण जित्नेले खेल जित्छ।", "अनलाइन सहकारी खेलमा जस्तै मिलेर काम गर्नुहोस् र अक्सिजन बाँड्नुहोस्।"],
+                ur: ["کھیلنے کا طریقہ منتخب کریں", "تنہا", "آن لائن", "واپس", "آن لائن موڈ منتخب کریں", "میچ کی قسم منتخب کریں", "جنگی موڈ", "ٹیم موڈ", "جنگ کا سائز منتخب کریں", "ٹیم کا سائز منتخب کریں", "معیاری ہتھیار استعمال کریں۔ سب کے پاس 100 HP ہیں؛ پہلے پانچ راؤنڈ جیتنے والا میچ جیتتا ہے۔", "آن لائن اشتراکی کھیل کی طرح مل کر کام کریں اور آکسیجن بانٹیں۔"],
+                sw: ["Chagua jinsi ya kucheza", "Mchezaji mmoja", "Mtandaoni", "Rudi", "Chagua hali ya mtandaoni", "Chagua aina ya mechi", "HALI YA VITA", "HALI YA TIMU", "Chagua ukubwa wa vita", "Chagua ukubwa wa timu", "Tumia silaha za kawaida. Kila mtu ana HP 100; wa kwanza kushinda raundi tano ndiye mshindi wa mechi.", "Fanyeni kazi pamoja na mshiriki oksijeni kama katika mchezo wa ushirikiano mtandaoni."],
+                cy: ["Dewiswch sut i chwarae", "Unigol", "Ar-lein", "Nôl", "Dewiswch fodd ar-lein", "Dewiswch fath y gêm", "MODD BRWYDRO", "MODD TÎM", "Dewiswch faint y frwydr", "Dewiswch faint y tîm", "Defnyddiwch arfau safonol. Mae gan bawb 100 HP; y cyntaf i ennill pum rownd sy'n ennill y gêm.", "Cydweithiwch a rhannwch ocsigen, fel yn y modd cydweithredol ar-lein."]
+            };
+
+            const ONLINE_QUEUE_TEXT_KEYS = [
+                'cancelSearch', 'connecting', 'queued', 'queueCancelled', 'matchFound',
+                'loadingMatch', 'loadingPlayers', 'countdown', 'matchCancelled'
+            ];
+            const ONLINE_QUEUE_TEXT = {
+                en: ["Cancel search", "Connecting to the multiplayer server...", "QUEUED • {time} • {players}/{required} PLAYERS", "Matchmaking search cancelled.", "MATCH FOUND — TELEPORTING SHORTLY", "DEPLOYING MATCH", "{loaded}/{required} players loaded\nWaiting for {remaining} more player(s)...", "MATCH STARTING", "A player left before loading finished. Search again."],
+                zh: ["取消搜索", "正在连接多人游戏服务器……", "排队中 • {time} • {players}/{required} 名玩家", "已取消匹配搜索。", "已找到比赛 — 即将传送", "正在部署比赛", "已加载 {loaded}/{required} 名玩家\n还需等待 {remaining} 名玩家……", "比赛即将开始", "有玩家在加载完成前离开，请重新搜索。"],
+                es: ["Cancelar búsqueda", "Conectando al servidor multijugador...", "EN COLA • {time} • {players}/{required} JUGADORES", "Búsqueda de partida cancelada.", "PARTIDA ENCONTRADA — TELETRANSPORTE EN BREVE", "PREPARANDO PARTIDA", "{loaded}/{required} jugadores cargados\nEsperando a {remaining} jugador(es) más...", "PARTIDA EN CURSO", "Un jugador se fue antes de terminar la carga. Busca de nuevo."],
+                it: ["Annulla ricerca", "Connessione al server multigiocatore...", "IN CODA • {time} • {players}/{required} GIOCATORI", "Ricerca della partita annullata.", "PARTITA TROVATA — TELETRASPORTO IN ARRIVO", "PREPARAZIONE PARTITA", "{loaded}/{required} giocatori caricati\nIn attesa di altri {remaining} giocatori...", "PARTITA IN AVVIO", "Un giocatore ha abbandonato prima del caricamento. Cerca di nuovo."],
+                fr: ["Annuler la recherche", "Connexion au serveur multijoueur...", "EN FILE • {time} • {players}/{required} JOUEURS", "Recherche de match annulée.", "MATCH TROUVÉ — TÉLÉPORTATION IMMINENTE", "PRÉPARATION DU MATCH", "{loaded}/{required} joueurs chargés\nEn attente de {remaining} joueur(s)...", "MATCH EN COURS", "Un joueur est parti avant la fin du chargement. Relancez la recherche."],
+                ru: ["Отменить поиск", "Подключение к серверу многопользовательской игры...", "В ОЧЕРЕДИ • {time} • {players}/{required} ИГРОКОВ", "Поиск матча отменён.", "МАТЧ НАЙДЕН — СКОРО ТЕЛЕПОРТАЦИЯ", "ПОДГОТОВКА МАТЧА", "Загружено игроков: {loaded}/{required}\nОжидание ещё {remaining} игрок(а)...", "МАТЧ НАЧИНАЕТСЯ", "Игрок вышел до завершения загрузки. Выполните поиск ещё раз."],
+                ja: ["検索をキャンセル", "マルチプレイヤーサーバーに接続中...", "待機中 • {time} • {players}/{required}人", "マッチ検索をキャンセルしました。", "マッチが見つかりました — まもなく転送します", "マッチを準備中", "{loaded}/{required}人のプレイヤーを読み込みました\n残り{remaining}人を待っています...", "マッチ開始", "読み込み完了前にプレイヤーが退出しました。もう一度検索してください。"],
+                de: ["Suche abbrechen", "Verbindung zum Mehrspielerserver wird hergestellt...", "IN WARTESCHLANGE • {time} • {players}/{required} SPIELER", "Spielersuche abgebrochen.", "MATCH GEFUNDEN — TELEPORTATION IN KÜRZE", "MATCH WIRD VORBEREITET", "{loaded}/{required} Spieler geladen\nWarten auf {remaining} weitere Spieler...", "MATCH STARTET", "Ein Spieler hat den Raum vor dem Laden verlassen. Suche erneut."],
+                pt: ["Cancelar busca", "Conectando ao servidor multijogador...", "NA FILA • {time} • {players}/{required} JOGADORES", "Busca por partida cancelada.", "PARTIDA ENCONTRADA — TELETRANSPORTE EM BREVE", "PREPARANDO PARTIDA", "{loaded}/{required} jogadores carregados\nAguardando mais {remaining} jogador(es)...", "PARTIDA COMEÇANDO", "Um jogador saiu antes do fim do carregamento. Busque novamente."],
+                ko: ["검색 취소", "멀티플레이어 서버에 연결 중...", "대기열 • {time} • {players}/{required}명", "매치 검색이 취소되었습니다.", "매치 발견 — 잠시 후 이동합니다", "매치 준비 중", "플레이어 {loaded}/{required}명 로드 완료\n플레이어 {remaining}명을 더 기다리는 중...", "매치 시작", "로딩이 끝나기 전에 플레이어가 나갔습니다. 다시 검색하세요."],
+                ar: ["إلغاء البحث", "جارٍ الاتصال بخادم اللعب الجماعي...", "في قائمة الانتظار • {time} • {players}/{required} لاعبين", "تم إلغاء البحث عن مباراة.", "تم العثور على مباراة — الانتقال قريبًا", "جارٍ تجهيز المباراة", "تم تحميل {loaded}/{required} من اللاعبين\nبانتظار {remaining} لاعب إضافي...", "بدأت المباراة", "غادر لاعب قبل اكتمال التحميل. ابحث مرة أخرى."],
+                hi: ["खोज रद्द करें", "मल्टीप्लेयर सर्वर से जुड़ रहे हैं...", "कतार में • {time} • {players}/{required} खिलाड़ी", "मैच खोज रद्द कर दी गई।", "मैच मिल गया — जल्द ही टेलीपोर्ट किया जाएगा", "मैच तैयार किया जा रहा है", "{loaded}/{required} खिलाड़ी लोड हुए\n{remaining} और खिलाड़ी का इंतज़ार है...", "मैच शुरू हो रहा है", "लोड पूरा होने से पहले एक खिलाड़ी चला गया। फिर से खोजें।"],
+                bn: ["অনুসন্ধান বাতিল করুন", "মাল্টিপ্লেয়ার সার্ভারে সংযোগ করা হচ্ছে...", "সারিতে • {time} • {players}/{required} জন খেলোয়াড়", "ম্যাচ খোঁজা বাতিল হয়েছে।", "ম্যাচ পাওয়া গেছে — শিগগিরই টেলিপোর্ট করা হবে", "ম্যাচ প্রস্তুত করা হচ্ছে", "{loaded}/{required} জন খেলোয়াড় লোড হয়েছে\nআরও {remaining} জনের অপেক্ষায়...", "ম্যাচ শুরু হচ্ছে", "লোড শেষ হওয়ার আগে একজন খেলোয়াড় চলে গেছেন। আবার খুঁজুন।"],
+                tr: ["Aramayı iptal et", "Çok oyunculu sunucuya bağlanılıyor...", "SIRADA • {time} • {players}/{required} OYUNCU", "Eşleştirme araması iptal edildi.", "MAÇ BULUNDU — BİRAZDAN IŞINLANACAKSINIZ", "MAÇ HAZIRLANIYOR", "{loaded}/{required} oyuncu yüklendi\n{remaining} oyuncu daha bekleniyor...", "MAÇ BAŞLIYOR", "Yükleme tamamlanmadan bir oyuncu ayrıldı. Yeniden arayın."],
+                nl: ["Zoekopdracht annuleren", "Verbinden met de multiplayerserver...", "IN WACHTRIJ • {time} • {players}/{required} SPELERS", "Zoeken naar een wedstrijd geannuleerd.", "WEDSTRIJD GEVONDEN — BINNENKORT TELEPORTEREN", "WEDSTRIJD WORDT VOORBEREID", "{loaded}/{required} spelers geladen\nWachten op nog {remaining} speler(s)...", "WEDSTRIJD BEGINT", "Een speler is vertrokken voordat het laden klaar was. Zoek opnieuw."],
+                sv: ["Avbryt sökning", "Ansluter till flerspelarservern...", "I KÖ • {time} • {players}/{required} SPELARE", "Matchsökningen avbröts.", "MATCH HITTAD — TELEPORTERAR SNART", "MATCHEN FÖRBEREDS", "{loaded}/{required} spelare har laddats\nVäntar på {remaining} spelare till...", "MATCHEN STARTAR", "En spelare lämnade innan laddningen var klar. Sök igen."],
+                pl: ["Anuluj wyszukiwanie", "Łączenie z serwerem wieloosobowym...", "W KOLEJCE • {time} • {players}/{required} GRACZY", "Wyszukiwanie meczu anulowane.", "ZNALEZIONO MECZ — WKRÓTCE NASTĄPI TELEPORTACJA", "PRZYGOTOWYWANIE MECZU", "Wczytano graczy: {loaded}/{required}\nOczekiwanie na kolejnych: {remaining}...", "MECZ SIĘ ROZPOCZYNA", "Gracz opuścił grę przed końcem wczytywania. Wyszukaj ponownie."],
+                uk: ["Скасувати пошук", "Підключення до сервера багатокористувацької гри...", "У ЧЕРЗІ • {time} • {players}/{required} ГРАВЦІВ", "Пошук матчу скасовано.", "МАТЧ ЗНАЙДЕНО — НЕЗАБАРОМ ТЕЛЕПОРТАЦІЯ", "ПІДГОТОВКА МАТЧУ", "Завантажено гравців: {loaded}/{required}\nОчікування ще {remaining} гравців...", "МАТЧ ПОЧИНАЄТЬСЯ", "Гравець вийшов до завершення завантаження. Спробуйте пошук ще раз."],
+                cs: ["Zrušit hledání", "Připojování k serveru pro více hráčů...", "VE FRONTĚ • {time} • {players}/{required} HRÁČŮ", "Hledání zápasu zrušeno.", "ZÁPAS NALEZEN — BRZY BUDETE TELEPORTOVÁNI", "PŘÍPRAVA ZÁPASU", "Načteno hráčů: {loaded}/{required}\nČeká se na dalších {remaining} hráčů...", "ZÁPAS ZAČÍNÁ", "Hráč odešel před dokončením načítání. Hledejte znovu."],
+                el: ["Ακύρωση αναζήτησης", "Σύνδεση με τον διακομιστή πολλών παικτών...", "ΣΕ ΑΝΑΜΟΝΗ • {time} • {players}/{required} ΠΑΙΚΤΕΣ", "Η αναζήτηση αγώνα ακυρώθηκε.", "ΒΡΕΘΗΚΕ ΑΓΩΝΑΣ — ΣΥΝΤΟΜΑ Η ΤΗΛΕΜΕΤΑΦΟΡΑ", "ΠΡΟΕΤΟΙΜΑΣΙΑ ΑΓΩΝΑ", "Φορτώθηκαν {loaded}/{required} παίκτες\nΑναμονή για {remaining} ακόμη...", "Ο ΑΓΩΝΑΣ ΞΕΚΙΝΑ", "Ένας παίκτης αποχώρησε πριν ολοκληρωθεί η φόρτωση. Αναζητήστε ξανά."],
+                he: ["ביטול החיפוש", "מתחבר לשרת מרובה המשתתפים...", "בתור • {time} • {players}/{required} שחקנים", "חיפוש המשחק בוטל.", "נמצא משחק — מעבר בקרוב", "מכין את המשחק", "נטענו {loaded}/{required} שחקנים\nממתין לעוד {remaining} שחקנים...", "המשחק מתחיל", "שחקן עזב לפני סיום הטעינה. חפשו שוב."],
+                th: ["ยกเลิกการค้นหา", "กำลังเชื่อมต่อเซิร์ฟเวอร์ผู้เล่นหลายคน...", "อยู่ในคิว • {time} • ผู้เล่น {players}/{required} คน", "ยกเลิกการค้นหาแมตช์แล้ว", "พบแมตช์แล้ว — กำลังจะย้ายไปยังสนาม", "กำลังเตรียมแมตช์", "โหลดผู้เล่นแล้ว {loaded}/{required} คน\nกำลังรอผู้เล่นอีก {remaining} คน...", "แมตช์กำลังเริ่ม", "มีผู้เล่นออกก่อนโหลดเสร็จ โปรดค้นหาอีกครั้ง"],
+                vi: ["Hủy tìm trận", "Đang kết nối với máy chủ nhiều người chơi...", "ĐANG CHỜ • {time} • {players}/{required} NGƯỜI CHƠI", "Đã hủy tìm trận.", "ĐÃ TÌM THẤY TRẬN — SẮP DỊCH CHUYỂN", "ĐANG CHUẨN BỊ TRẬN ĐẤU", "Đã tải {loaded}/{required} người chơi\nĐang chờ thêm {remaining} người...", "TRẬN ĐẤU BẮT ĐẦU", "Một người chơi đã rời đi trước khi tải xong. Hãy tìm lại."],
+                id: ["Batalkan pencarian", "Menghubungkan ke server multipemain...", "MENGANTRE • {time} • {players}/{required} PEMAIN", "Pencarian pertandingan dibatalkan.", "PERTANDINGAN DITEMUKAN — SEGERA DITELEPORTASI", "MENYIAPKAN PERTANDINGAN", "{loaded}/{required} pemain dimuat\nMenunggu {remaining} pemain lagi...", "PERTANDINGAN DIMULAI", "Seorang pemain keluar sebelum pemuatan selesai. Cari lagi."],
+                ro: ["Anulează căutarea", "Conectare la serverul multiplayer...", "ÎN AȘTEPTARE • {time} • {players}/{required} JUCĂTORI", "Căutarea meciului a fost anulată.", "MECI GĂSIT — TELEPORTARE ÎN CURÂND", "SE PREGĂTEȘTE MECIUL", "{loaded}/{required} jucători încărcați\nSe mai așteaptă {remaining} jucător(i)...", "MECIUL ÎNCEPE", "Un jucător a plecat înainte de finalizarea încărcării. Caută din nou."],
+                hu: ["Keresés megszakítása", "Csatlakozás a többjátékos szerverhez...", "VÁRAKOZÁS • {time} • {players}/{required} JÁTÉKOS", "A meccskeresés megszakítva.", "MECCS TALÁLVA — HAMAROSAN ÁTHELYEZÉS", "MECCS ELŐKÉSZÍTÉSE", "{loaded}/{required} játékos betöltve\nVárakozás még {remaining} játékosra...", "MECCS INDUL", "Egy játékos kilépett a betöltés befejezése előtt. Keress újra."],
+                fi: ["Peru haku", "Yhdistetään moninpelipalvelimeen...", "JONOSSA • {time} • {players}/{required} PELAAJAA", "Otteluhaku peruutettu.", "OTTELU LÖYTYI — SIIRTO ALKAA PIAN", "OTTELUA VALMISTELLAAN", "Pelaajia ladattu {loaded}/{required}\nOdotetaan vielä {remaining} pelaajaa...", "OTTELU ALKAA", "Pelaaja poistui ennen latauksen valmistumista. Hae uudelleen."],
+                da: ["Annuller søgning", "Opretter forbindelse til multiplayer-serveren...", "I KØ • {time} • {players}/{required} SPILLERE", "Søgning efter kamp annulleret.", "KAMP FUNDET — TELEPORTERER SNART", "FORBEREDER KAMP", "{loaded}/{required} spillere indlæst\nVenter på {remaining} spiller(e) mere...", "KAMPEN STARTER", "En spiller forlod spillet, før indlæsningen var færdig. Søg igen."],
+                no: ["Avbryt søk", "Kobler til flerspillerserveren...", "I KØ • {time} • {players}/{required} SPILLERE", "Kampsøket ble avbrutt.", "KAMP FUNNET — TELEPORTERER SNART", "FORBEREDER KAMP", "{loaded}/{required} spillere lastet inn\nVenter på {remaining} flere spillere...", "KAMPEN STARTER", "En spiller forlot spillet før innlastingen var ferdig. Søk på nytt."],
+                sk: ["Zrušiť hľadanie", "Pripája sa k serveru pre viacerých hráčov...", "V RADE • {time} • {players}/{required} HRÁČOV", "Hľadanie zápasu bolo zrušené.", "ZÁPAS NÁJDENÝ — ČOSKORO NASLEDUJE TELEPORT", "PRÍPRAVA ZÁPASU", "Načítaní hráči: {loaded}/{required}\nČaká sa na ďalších {remaining} hráčov...", "ZÁPAS SA ZAČÍNA", "Hráč odišiel pred dokončením načítania. Skúste hľadať znova."],
+                sl: ["Prekliči iskanje", "Povezovanje s strežnikom za več igralcev...", "V ČAKALNI VRSTI • {time} • {players}/{required} IGRALCEV", "Iskanje tekme je preklicano.", "TEKMA NAJDENA — TELEPORTIRANJE KMALU", "PRIPRAVA TEKME", "Naloženih igralcev: {loaded}/{required}\nČakanje še na {remaining} igralcev...", "TEKMA SE ZAČENJA", "Igralec je odšel pred koncem nalaganja. Iščite znova."],
+                sr: ["Otkaži pretragu", "Povezivanje sa serverom za više igrača...", "U REDU • {time} • {players}/{required} IGRAČA", "Pretraga meča je otkazana.", "MEČ PRONAĐEN — TELEPORTACIJA USKORO", "PRIPREMA MEČA", "Učitano igrača: {loaded}/{required}\nČeka se još {remaining} igrača...", "MEČ POČINJE", "Igrač je otišao pre završetka učitavanja. Potražite ponovo."],
+                hr: ["Otkaži pretragu", "Povezivanje s poslužiteljem za više igrača...", "U REDU • {time} • {players}/{required} IGRAČA", "Pretraga meča je otkazana.", "MEČ PRONAĐEN — TELEPORTIRANJE USKORO", "PRIPREMA MEČA", "Učitano igrača: {loaded}/{required}\nČeka se još {remaining} igrača...", "MEČ POČINJE", "Igrač je otišao prije završetka učitavanja. Pretražite ponovno."],
+                bg: ["Отмяна на търсенето", "Свързване със сървъра за мултиплейър...", "НА ОПАШКАТА • {time} • {players}/{required} ИГРАЧИ", "Търсенето на мач е отменено.", "МАЧЪТ Е НАМЕРЕН — СКОРО ЩЕ БЪДЕТЕ ТЕЛЕПОРТИРАНИ", "ПОДГОТОВКА НА МАЧА", "Заредени играчи: {loaded}/{required}\nИзчакване на още {remaining} играчи...", "МАЧЪТ ЗАПОЧВА", "Играч напусна преди края на зареждането. Потърсете отново."],
+                lt: ["Atšaukti paiešką", "Jungiamasi prie kelių žaidėjų serverio...", "EILĖJE • {time} • {players}/{required} ŽAID.", "Rungtynių paieška atšaukta.", "RUNGTYNĖS RASTOS — NETRUKUS BŪSITE PERKELTI", "RUOŠIAMOS RUNGTYNĖS", "Įkelta žaidėjų: {loaded}/{required}\nLaukiama dar {remaining} žaidėjų...", "RUNGTYNĖS PRASIDEDA", "Žaidėjas išėjo nebaigus įkelti. Ieškokite dar kartą."],
+                lv: ["Atcelt meklēšanu", "Notiek savienojums ar vairāku spēlētāju serveri...", "RINDĀ • {time} • {players}/{required} SPĒLĒTĀJI", "Spēles meklēšana atcelta.", "SPĒLE ATRASTA — DRĪZ NOTIKS TELEPORTĀCIJA", "SAGATAVO SPĒLI", "Ielādēti spēlētāji: {loaded}/{required}\nGaida vēl {remaining} spēlētājus...", "SPĒLE SĀKAS", "Spēlētājs aizgāja pirms ielādes pabeigšanas. Meklējiet vēlreiz."],
+                et: ["Tühista otsing", "Ühenduse loomine mitmikmänguserveriga...", "JÄRJEKORRAS • {time} • {players}/{required} MÄNGIJAT", "Matši otsing tühistati.", "MATŠ LEITUD — TEISALDAMINE ALGAB PEAGI", "MATŠI ETTEVALMISTAMINE", "Laaditud mängijaid: {loaded}/{required}\nOodatakse veel {remaining} mängijat...", "MATŠ ALGAB", "Mängija lahkus enne laadimise lõppu. Otsi uuesti."],
+                is: ["Hætta við leit", "Tengist fjölspilunarþjóninum...", "Í BIÐ • {time} • {players}/{required} LEIKMENN", "Hætt var við leit að leik.", "LEIKUR FUNNINN — FJARFLUTNINGUR HEFST BRÁÐLEGA", "UNDIRBÝ LEIK", "Leikmenn hlaðnir: {loaded}/{required}\nBíð eftir {remaining} leikmönnum til viðbótar...", "LEIKUR HEFST", "Leikmaður fór áður en hleðslu lauk. Leitaðu aftur."],
+                af: ["Kanselleer soektog", "Koppel aan die multispelerbediener...", "IN WAGRY • {time} • {players}/{required} SPELERS", "Wedstrydsoektog gekanselleer.", "WEDSTRYD GEVIND — TELEPORTERING BINNEKORT", "BEREI WEDSTRYD VOOR", "{loaded}/{required} spelers gelaai\nWag vir nog {remaining} speler(s)...", "WEDSTRYD BEGIN", "'n Speler het vertrek voordat laaiwerk voltooi is. Soek weer."],
+                sq: ["Anulo kërkimin", "Po lidhet me serverin për shumë lojtarë...", "NË RADHË • {time} • {players}/{required} LOJTARË", "Kërkimi i ndeshjes u anulua.", "U GJET NDESHJA — TELEPORTIMI SË SHPEJTI", "PO PËRGATITET NDESHJA", "U ngarkuan {loaded}/{required} lojtarë\nNë pritje të {remaining} lojtarëve të tjerë...", "NIS NDESHJA", "Një lojtar u largua para përfundimit të ngarkimit. Kërko përsëri."],
+                hy: ["Չեղարկել որոնումը", "Միացում բազմախաղացողի սերվերին...", "ՀԵՐԹՈՒՄ • {time} • {players}/{required} ԽԱՂԱՑՈՂ", "Խաղի որոնումը չեղարկվեց։", "ԽԱՂԸ ԳՏՆՎԵՑ — ՇՈՒՏՈՎ ԿՏԵՂԱՓՈԽՎԵՔ", "ԽԱՂԻ ՊԱՏՐԱՍՏՈՒՄ", "Բեռնվել է {loaded}/{required} խաղացող\nՍպասում ենք ևս {remaining} խաղացողի...", "ԽԱՂԸ ՍԿՍՎՈՒՄ Է", "Խաղացողը հեռացավ մինչև բեռնման ավարտը։ Կրկին որոնեք։"],
+                az: ["Axtarışı ləğv et", "Çoxoyunçulu serverə qoşulur...", "NÖVBƏDƏ • {time} • {players}/{required} OYUNÇU", "Matç axtarışı ləğv edildi.", "MATÇ TAPILDI — TEZLİKLƏ TELEPORT OLACAQSINIZ", "MATÇ HAZIRLANIR", "{loaded}/{required} oyunçu yükləndi\nDaha {remaining} oyunçu gözlənilir...", "MATÇ BAŞLAYIR", "Yükləmə bitməmiş oyunçu ayrıldı. Yenidən axtarın."],
+                be: ["Скасаваць пошук", "Падключэнне да сервера шматкарыстальніцкай гульні...", "У ЧАРЗЕ • {time} • {players}/{required} ГУЛЬЦОЎ", "Пошук матча скасаваны.", "МАТЧ ЗНАЙДЗЕНЫ — ХУТКА АДБУДЗЕЦЦА ТЭЛЕПАРТАЦЫЯ", "ПАДРЫХТОЎКА МАТЧА", "Загружана гульцоў: {loaded}/{required}\nЧакаем яшчэ {remaining} гульцоў...", "МАТЧ ПАЧЫНАЕЦЦА", "Гулец выйшаў да завяршэння загрузкі. Паспрабуйце зноў."],
+                bs: ["Otkaži pretragu", "Povezivanje sa serverom za više igrača...", "U REDU • {time} • {players}/{required} IGRAČA", "Pretraga meča je otkazana.", "MEČ PRONAĐEN — TELEPORTACIJA USKORO", "PRIPREMA MEČA", "Učitano igrača: {loaded}/{required}\nČeka se još {remaining} igrača...", "MEČ POČINJE", "Igrač je otišao prije završetka učitavanja. Pretražite ponovo."],
+                ca: ["Cancel·la la cerca", "S'està connectant al servidor multijugador...", "A LA CUA • {time} • {players}/{required} JUGADORS", "S'ha cancel·lat la cerca de partida.", "PARTIDA TROBADA — TELETRANSPORT EN BREU", "S'ESTÀ PREPARANT LA PARTIDA", "{loaded}/{required} jugadors carregats\nS'esperen {remaining} jugador(s) més...", "LA PARTIDA COMENÇA", "Un jugador ha marxat abans d'acabar la càrrega. Torna a cercar."],
+                eu: ["Utzi bilaketa", "Jokalari anitzeko zerbitzariarekin konektatzen...", "ILARAN • {time} • {players}/{required} JOKALARI", "Partida bilaketa bertan behera utzi da.", "PARTIDA AURKITU DA — TELEPORTAZIOA LASTER", "PARTIDA PRESTATZEN", "{loaded}/{required} jokalari kargatuta\nBeste {remaining} jokalariren zain...", "PARTIDA HASTEN", "Jokalari bat irten da karga amaitu aurretik. Bilatu berriro."],
+                gl: ["Cancelar busca", "Conectando co servidor multixogador...", "NA FILA • {time} • {players}/{required} XOGADORES", "Busca da partida cancelada.", "PARTIDA ATOPADA — TELETRANSPORTE EN BREVE", "PREPARANDO A PARTIDA", "{loaded}/{required} xogadores cargados\nAgardando por {remaining} xogador(es) máis...", "COMEZA A PARTIDA", "Un xogador marchou antes de rematar a carga. Busca de novo."],
+                ka: ["ძიების გაუქმება", "მრავალმოთამაშიან სერვერთან დაკავშირება...", "რიგში • {time} • {players}/{required} მოთამაშე", "მატჩის ძიება გაუქმდა.", "მატჩი ნაპოვნია — მალე გადაგიყვანთ", "მატჩის მომზადება", "ჩაიტვირთა {loaded}/{required} მოთამაშე\nველოდებით კიდევ {remaining} მოთამაშეს...", "მატჩი იწყება", "მოთამაშე ჩატვირთვის დასრულებამდე გავიდა. თავიდან მოძებნეთ."],
+                gu: ["શોધ રદ કરો", "મલ્ટિપ્લેયર સર્વર સાથે જોડાઈ રહ્યા છીએ...", "કતારમાં • {time} • {players}/{required} ખેલાડીઓ", "મેચ શોધ રદ થઈ.", "મેચ મળી — ટૂંક સમયમાં ટેલિપોર્ટ થશે", "મેચ તૈયાર થઈ રહી છે", "{loaded}/{required} ખેલાડીઓ લોડ થયા\nહજુ {remaining} ખેલાડીઓની રાહ જોવાઈ રહી છે...", "મેચ શરૂ થઈ રહી છે", "લોડિંગ પૂરું થાય તે પહેલાં એક ખેલાડી નીકળી ગયો. ફરી શોધો."],
+                ht: ["Anile rechèch la", "K ap konekte ak sèvè multijwè a...", "NAN KE • {time} • {players}/{required} JWE", "Rechèch match la anile.", "YO JWENN MATCH LA — TELEPÒTASYON TALÈ", "K AP PREPARE MATCH LA", "{loaded}/{required} jwè chaje\nK ap tann {remaining} lòt jwè...", "MATCH LA AP KÒMANSE", "Yon jwè kite anvan chajman an fini. Chèche ankò."],
+                km: ["បោះបង់ការស្វែងរក", "កំពុងភ្ជាប់ទៅម៉ាស៊ីនមេអ្នកលេងច្រើន...", "កំពុងរង់ចាំ • {time} • អ្នកលេង {players}/{required} នាក់", "បានបោះបង់ការស្វែងរកការប្រកួត។", "រកឃើញការប្រកួត — នឹងផ្លាស់ទីក្នុងពេលឆាប់ៗ", "កំពុងរៀបចំការប្រកួត", "បានផ្ទុកអ្នកលេង {loaded}/{required} នាក់\nកំពុងរង់ចាំអ្នកលេង {remaining} នាក់ទៀត...", "ការប្រកួតចាប់ផ្តើម", "អ្នកលេងម្នាក់បានចាកចេញមុនពេលផ្ទុកចប់។ ស្វែងរកម្តងទៀត។"],
+                lo: ["ຍົກເລີກການຄົ້ນຫາ", "ກຳລັງເຊື່ອມຕໍ່ເຊີບເວີຫຼາຍຜູ້ຫຼິ້ນ...", "ຢູ່ໃນຄິວ • {time} • ຜູ້ຫຼິ້ນ {players}/{required} ຄົນ", "ຍົກເລີກການຄົ້ນຫາແຂ່ງຂັນແລ້ວ", "ພົບການແຂ່ງຂັນ — ກຳລັງຈະຍ້າຍໄປ", "ກຳລັງກຽມການແຂ່ງຂັນ", "ໂຫຼດຜູ້ຫຼິ້ນແລ້ວ {loaded}/{required} ຄົນ\nລໍຖ້າອີກ {remaining} ຄົນ...", "ການແຂ່ງຂັນກຳລັງເລີ່ມ", "ຜູ້ຫຼິ້ນອອກກ່ອນໂຫຼດສຳເລັດ. ຄົ້ນຫາອີກຄັ້ງ."],
+                mk: ["Откажи пребарување", "Поврзување со серверот за повеќе играчи...", "ВО РЕД • {time} • {players}/{required} ИГРАЧИ", "Пребарувањето натпревар е откажано.", "НАТПРЕВАРОТ Е НАЈДЕН — СЛЕДУВА ТЕЛЕПОРТАЦИЈА", "ПОДГОТОВКА НА НАТПРЕВАРОТ", "Вчитани играчи: {loaded}/{required}\nСе чекаат уште {remaining} играчи...", "НАТПРЕВАРОТ ПОЧНУВА", "Играчот излезе пред да заврши вчитувањето. Пребарајте повторно."],
+                ml: ["തിരയൽ റദ്ദാക്കുക", "മൾട്ടിപ്ലെയർ സെർവറിലേക്ക് ബന്ധിപ്പിക്കുന്നു...", "ക്യൂവിൽ • {time} • {players}/{required} കളിക്കാർ", "മാച്ച് തിരയൽ റദ്ദാക്കി.", "മാച്ച് കണ്ടെത്തി — ഉടൻ ടെലിപോർട്ട് ചെയ്യും", "മാച്ച് തയ്യാറാക്കുന്നു", "{loaded}/{required} കളിക്കാർ ലോഡ് ചെയ്തു\nകൂടുതൽ {remaining} കളിക്കാർക്കായി കാത്തിരിക്കുന്നു...", "മാച്ച് ആരംഭിക്കുന്നു", "ലോഡിംഗ് പൂർത്തിയാകുന്നതിന് മുമ്പ് ഒരു കളിക്കാരൻ പോയി. വീണ്ടും തിരയുക."],
+                mr: ["शोध रद्द करा", "मल्टिप्लेअर सर्व्हरशी जोडत आहे...", "रांगेत • {time} • {players}/{required} खेळाडू", "सामन्याचा शोध रद्द केला.", "सामना सापडला — लवकरच टेलिपोर्ट केले जाईल", "सामना तयार होत आहे", "{loaded}/{required} खेळाडू लोड झाले\nआणखी {remaining} खेळाडूंची प्रतीक्षा...", "सामना सुरू होत आहे", "लोड पूर्ण होण्यापूर्वी एक खेळाडू बाहेर पडला. पुन्हा शोधा."],
+                mn: ["Хайлтыг цуцлах", "Олон тоглогчийн серверт холбогдож байна...", "ДАРААЛАЛД • {time} • {players}/{required} ТОГЛОГЧ", "Тоглолтын хайлтыг цуцаллаа.", "ТОГЛОЛТ ОЛДЛОО — УДАХГҮЙ ШИЛЖҮҮЛНЭ", "ТОГЛОЛТЫГ БЭЛТГЭЖ БАЙНА", "{loaded}/{required} тоглогч ачаалагдлаа\nДахин {remaining} тоглогч хүлээж байна...", "ТОГЛОЛТ ЭХЭЛЖ БАЙНА", "Ачаалж дуусахаас өмнө тоглогч гарлаа. Дахин хайна уу."],
+                ne: ["खोज रद्द गर्नुहोस्", "मल्टिप्लेयर सर्भरमा जडान हुँदैछ...", "लाइनमा • {time} • {players}/{required} खेलाडी", "खेल खोजी रद्द गरियो।", "खेल भेटियो — छिट्टै टेलिपोर्ट गरिनेछ", "खेल तयार हुँदैछ", "{loaded}/{required} खेलाडी लोड भए\nथप {remaining} खेलाडीको प्रतीक्षा...", "खेल सुरु हुँदैछ", "लोड पूरा हुनुअघि एक खेलाडी बाहिरियो। फेरि खोज्नुहोस्।"],
+                ur: ["تلاش منسوخ کریں", "ملٹی پلیئر سرور سے منسلک ہو رہا ہے...", "قطار میں • {time} • {players}/{required} کھلاڑی", "میچ کی تلاش منسوخ کر دی گئی۔", "میچ مل گیا — جلد منتقل کیا جائے گا", "میچ تیار ہو رہا ہے", "{loaded}/{required} کھلاڑی لوڈ ہو گئے\nمزید {remaining} کھلاڑیوں کا انتظار ہے...", "میچ شروع ہو رہا ہے", "لوڈنگ مکمل ہونے سے پہلے ایک کھلاڑی چلا گیا۔ دوبارہ تلاش کریں۔"],
+                sw: ["Ghairi utafutaji", "Inaunganisha kwenye seva ya wachezaji wengi...", "KATIKA FOLENI • {time} • WACHEZAJI {players}/{required}", "Utafutaji wa mechi umeghairiwa.", "MECHI IMEPATIKANA — UTASAFIRISHWA HIVI KARIBUNI", "INAANDAA MECHI", "Wachezaji {loaded}/{required} wamepakuliwa\nInasubiri wachezaji wengine {remaining}...", "MECHI INAANZA", "Mchezaji ameondoka kabla upakiaji haujakamilika. Tafuta tena."],
+                cy: ["Canslo chwilio", "Yn cysylltu â'r gweinydd aml-chwaraewr...", "MEWN CIW • {time} • {players}/{required} CHWARAEWR", "Canslwyd y chwilio am gêm.", "CANFUWYD GÊM — TELEPORTIO'N FUAN", "PARATOI'R GÊM", "Llwythwyd {loaded}/{required} o chwaraewyr\nYn aros am {remaining} chwaraewr(chwaraewyr) arall...", "GÊM YN DECHRAU", "Gadawodd chwaraewr cyn i'r llwytho orffen. Chwiliwch eto."]
+            };
+
+            const ONLINE_QUEUE_ERROR_TEXT_KEYS = [
+                'noInternet', 'serverUnavailable', 'connectionTimeout', 'connectionClosed',
+                'connectionLost', 'serverError', 'invalidResponse'
+            ];
+            const ONLINE_QUEUE_ERROR_TEXT = {
+                en: ["No internet connection. Connect to the internet and try again.", "Could not reach the multiplayer server. Check that the game server is running and try again.", "The multiplayer server did not respond. Check that it is running and try again.", "The connection closed. Check that the server is still running and try again.", "The multiplayer connection was lost. Returning to the main menu.", "The multiplayer server reported an error.", "Received an invalid response from the multiplayer server."],
+                zh: ["没有网络连接。请连接互联网后重试。", "无法连接多人游戏服务器。请检查游戏服务器是否运行，然后重试。", "多人游戏服务器没有响应。请检查服务器是否运行，然后重试。", "连接已关闭。请检查服务器是否仍在运行，然后重试。", "多人游戏连接已断开。正在返回主菜单。", "多人游戏服务器报告了错误。", "收到多人游戏服务器的无效响应。"],
+                es: ["No hay conexión a Internet. Conéctate e inténtalo de nuevo.", "No se pudo conectar con el servidor multijugador. Comprueba que esté en ejecución e inténtalo de nuevo.", "El servidor multijugador no responde. Comprueba que esté en ejecución e inténtalo de nuevo.", "La conexión se cerró. Comprueba que el servidor siga en ejecución e inténtalo de nuevo.", "Se perdió la conexión multijugador. Volviendo al menú principal.", "El servidor multijugador informó de un error.", "Se recibió una respuesta no válida del servidor multijugador."],
+                it: ["Nessuna connessione Internet. Connettiti e riprova.", "Impossibile raggiungere il server multigiocatore. Verifica che sia in esecuzione e riprova.", "Il server multigiocatore non risponde. Verifica che sia in esecuzione e riprova.", "La connessione è stata chiusa. Verifica che il server sia ancora attivo e riprova.", "Connessione multigiocatore persa. Ritorno al menu principale.", "Il server multigiocatore ha segnalato un errore.", "Risposta non valida ricevuta dal server multigiocatore."],
+                fr: ["Aucune connexion Internet. Connectez-vous puis réessayez.", "Impossible de joindre le serveur multijoueur. Vérifiez qu'il fonctionne puis réessayez.", "Le serveur multijoueur ne répond pas. Vérifiez qu'il fonctionne puis réessayez.", "La connexion a été fermée. Vérifiez que le serveur fonctionne toujours puis réessayez.", "Connexion multijoueur perdue. Retour au menu principal.", "Le serveur multijoueur a signalé une erreur.", "Réponse invalide reçue du serveur multijoueur."],
+                ru: ["Нет подключения к интернету. Подключитесь и попробуйте снова.", "Не удалось подключиться к серверу игры. Убедитесь, что он запущен, и попробуйте снова.", "Сервер игры не отвечает. Убедитесь, что он запущен, и попробуйте снова.", "Соединение закрыто. Проверьте, что сервер работает, и попробуйте снова.", "Соединение с игрой потеряно. Возврат в главное меню.", "Сервер многопользовательской игры сообщил об ошибке.", "Получен неверный ответ от сервера многопользовательской игры."],
+                ja: ["インターネットに接続されていません。接続してから再試行してください。", "マルチプレイヤーサーバーに接続できません。サーバーの稼働を確認して再試行してください。", "マルチプレイヤーサーバーから応答がありません。サーバーを確認して再試行してください。", "接続が閉じられました。サーバーの稼働を確認して再試行してください。", "マルチプレイヤー接続が切断されました。メインメニューに戻ります。", "マルチプレイヤーサーバーでエラーが発生しました。", "マルチプレイヤーサーバーから無効な応答を受信しました。"],
+                de: ["Keine Internetverbindung. Stelle eine Verbindung her und versuche es erneut.", "Der Mehrspielerserver ist nicht erreichbar. Prüfe, ob er läuft, und versuche es erneut.", "Der Mehrspielerserver antwortet nicht. Prüfe, ob er läuft, und versuche es erneut.", "Die Verbindung wurde geschlossen. Prüfe, ob der Server noch läuft, und versuche es erneut.", "Die Mehrspieler-Verbindung wurde unterbrochen. Zurück zum Hauptmenü.", "Der Mehrspielerserver hat einen Fehler gemeldet.", "Ungültige Antwort vom Mehrspielerserver erhalten."],
+                pt: ["Sem conexão com a Internet. Conecte-se e tente novamente.", "Não foi possível acessar o servidor multijogador. Verifique se ele está ativo e tente novamente.", "O servidor multijogador não respondeu. Verifique se está ativo e tente novamente.", "A conexão foi encerrada. Verifique se o servidor ainda está ativo e tente novamente.", "A conexão multijogador foi perdida. Voltando ao menu principal.", "O servidor multijogador informou um erro.", "Resposta inválida recebida do servidor multijogador."],
+                ko: ["인터넷에 연결되어 있지 않습니다. 연결한 후 다시 시도하세요.", "멀티플레이어 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인한 후 다시 시도하세요.", "멀티플레이어 서버가 응답하지 않습니다. 서버를 확인한 후 다시 시도하세요.", "연결이 종료되었습니다. 서버가 계속 실행 중인지 확인한 후 다시 시도하세요.", "멀티플레이어 연결이 끊겼습니다. 메인 메뉴로 돌아갑니다.", "멀티플레이어 서버에서 오류가 발생했습니다.", "멀티플레이어 서버에서 잘못된 응답을 받았습니다."],
+                ar: ["لا يوجد اتصال بالإنترنت. اتصل بالإنترنت ثم حاول مرة أخرى.", "تعذر الوصول إلى خادم اللعب الجماعي. تحقق من تشغيله ثم حاول مرة أخرى.", "لم يستجب خادم اللعب الجماعي. تحقق من تشغيله ثم حاول مرة أخرى.", "أُغلق الاتصال. تحقق من استمرار تشغيل الخادم ثم حاول مرة أخرى.", "فُقد اتصال اللعب الجماعي. جارٍ الرجوع إلى القائمة الرئيسية.", "أبلغ خادم اللعب الجماعي عن خطأ.", "تم تلقي استجابة غير صالحة من خادم اللعب الجماعي."],
+                hi: ["इंटरनेट कनेक्शन नहीं है। इंटरनेट से जुड़कर फिर कोशिश करें।", "मल्टीप्लेयर सर्वर तक नहीं पहुँच सके। सर्वर चालू है या नहीं जाँचें और फिर कोशिश करें।", "मल्टीप्लेयर सर्वर ने जवाब नहीं दिया। सर्वर चालू है या नहीं जाँचें और फिर कोशिश करें।", "कनेक्शन बंद हो गया। सर्वर चालू है या नहीं जाँचें और फिर कोशिश करें।", "मल्टीप्लेयर कनेक्शन टूट गया। मुख्य मेनू पर लौट रहे हैं।", "मल्टीप्लेयर सर्वर ने त्रुटि बताई।", "मल्टीप्लेयर सर्वर से अमान्य जवाब मिला।"],
+                bn: ["ইন্টারনেট সংযোগ নেই। ইন্টারনেটে যুক্ত হয়ে আবার চেষ্টা করুন।", "মাল্টিপ্লেয়ার সার্ভারে পৌঁছানো যায়নি। সার্ভার চালু আছে কি না দেখে আবার চেষ্টা করুন।", "মাল্টিপ্লেয়ার সার্ভার সাড়া দেয়নি। সার্ভার চালু আছে কি না দেখে আবার চেষ্টা করুন।", "সংযোগ বন্ধ হয়ে গেছে। সার্ভার চালু আছে কি না দেখে আবার চেষ্টা করুন।", "মাল্টিপ্লেয়ার সংযোগ বিচ্ছিন্ন হয়েছে। মূল মেনুতে ফিরে যাওয়া হচ্ছে।", "মাল্টিপ্লেয়ার সার্ভারে ত্রুটি হয়েছে।", "মাল্টিপ্লেয়ার সার্ভার থেকে ভুল উত্তর পাওয়া গেছে।"],
+                tr: ["İnternet bağlantısı yok. İnternete bağlanıp tekrar dene.", "Çok oyunculu sunucuya ulaşılamadı. Sunucunun çalıştığını kontrol edip tekrar dene.", "Çok oyunculu sunucu yanıt vermedi. Çalıştığını kontrol edip tekrar dene.", "Bağlantı kapandı. Sunucunun hâlâ çalıştığını kontrol edip tekrar dene.", "Çok oyunculu bağlantısı kesildi. Ana menüye dönülüyor.", "Çok oyunculu sunucu bir hata bildirdi.", "Çok oyunculu sunucudan geçersiz yanıt alındı."],
+                nl: ["Geen internetverbinding. Maak verbinding en probeer het opnieuw.", "Kan de multiplayerserver niet bereiken. Controleer of deze actief is en probeer het opnieuw.", "De multiplayerserver reageert niet. Controleer of deze actief is en probeer het opnieuw.", "De verbinding is gesloten. Controleer of de server nog actief is en probeer het opnieuw.", "De multiplayerverbinding is verbroken. Terug naar het hoofdmenu.", "De multiplayerserver heeft een fout gemeld.", "Ongeldig antwoord ontvangen van de multiplayerserver."],
+                sv: ["Ingen internetanslutning. Anslut till internet och försök igen.", "Det gick inte att nå flerspelarservern. Kontrollera att den körs och försök igen.", "Flerspelarservern svarade inte. Kontrollera att den körs och försök igen.", "Anslutningen stängdes. Kontrollera att servern fortfarande körs och försök igen.", "Flerspelaranslutningen förlorades. Återgår till huvudmenyn.", "Flerspelarservern rapporterade ett fel.", "Ogiltigt svar från flerspelarservern."],
+                pl: ["Brak połączenia z internetem. Połącz się i spróbuj ponownie.", "Nie można połączyć się z serwerem gry. Sprawdź, czy działa, i spróbuj ponownie.", "Serwer gry nie odpowiada. Sprawdź, czy działa, i spróbuj ponownie.", "Połączenie zostało zamknięte. Sprawdź, czy serwer nadal działa, i spróbuj ponownie.", "Utracono połączenie z grą. Powrót do menu głównego.", "Serwer gry zgłosił błąd.", "Otrzymano nieprawidłową odpowiedź z serwera gry."],
+                uk: ["Немає підключення до інтернету. Підключіться та спробуйте ще раз.", "Не вдалося підключитися до сервера гри. Перевірте, чи він працює, і спробуйте ще раз.", "Сервер гри не відповідає. Перевірте, чи він працює, і спробуйте ще раз.", "З'єднання закрито. Перевірте, чи сервер працює, і спробуйте ще раз.", "Зв'язок із грою втрачено. Повернення до головного меню.", "Сервер багатокористувацької гри повідомив про помилку.", "Отримано некоректну відповідь від сервера гри."],
+                cs: ["Není dostupné připojení k internetu. Připojte se a zkuste to znovu.", "Nelze se připojit k serveru pro více hráčů. Zkontrolujte, zda běží, a zkuste to znovu.", "Server pro více hráčů neodpovídá. Zkontrolujte, zda běží, a zkuste to znovu.", "Spojení bylo ukončeno. Zkontrolujte, zda server stále běží, a zkuste to znovu.", "Spojení pro více hráčů bylo ztraceno. Návrat do hlavní nabídky.", "Server pro více hráčů ohlásil chybu.", "Ze serveru pro více hráčů přišla neplatná odpověď."],
+                el: ["Δεν υπάρχει σύνδεση στο διαδίκτυο. Συνδεθείτε και δοκιμάστε ξανά.", "Δεν ήταν δυνατή η σύνδεση με τον διακομιστή πολλών παικτών. Ελέγξτε ότι λειτουργεί και δοκιμάστε ξανά.", "Ο διακομιστής πολλών παικτών δεν αποκρίθηκε. Ελέγξτε ότι λειτουργεί και δοκιμάστε ξανά.", "Η σύνδεση έκλεισε. Ελέγξτε ότι ο διακομιστής λειτουργεί ακόμη και δοκιμάστε ξανά.", "Η σύνδεση πολλών παικτών χάθηκε. Επιστροφή στο κύριο μενού.", "Ο διακομιστής πολλών παικτών ανέφερε σφάλμα.", "Λήφθηκε μη έγκυρη απάντηση από τον διακομιστή πολλών παικτών."],
+                he: ["אין חיבור לאינטרנט. התחברו לאינטרנט ונסו שוב.", "לא ניתן להגיע לשרת מרובה המשתתפים. בדקו שהוא פועל ונסו שוב.", "שרת מרובה המשתתפים לא הגיב. בדקו שהוא פועל ונסו שוב.", "החיבור נסגר. בדקו שהשרת עדיין פועל ונסו שוב.", "החיבור למשחק אבד. חוזרים לתפריט הראשי.", "שרת מרובה המשתתפים דיווח על שגיאה.", "התקבלה תגובה לא תקינה משרת מרובה המשתתפים."],
+                th: ["ไม่มีการเชื่อมต่ออินเทอร์เน็ต โปรดเชื่อมต่อแล้วลองอีกครั้ง", "เชื่อมต่อเซิร์ฟเวอร์ผู้เล่นหลายคนไม่ได้ โปรดตรวจสอบว่าเซิร์ฟเวอร์ทำงานอยู่แล้วลองอีกครั้ง", "เซิร์ฟเวอร์ผู้เล่นหลายคนไม่ตอบสนอง โปรดตรวจสอบเซิร์ฟเวอร์แล้วลองอีกครั้ง", "การเชื่อมต่อถูกปิด โปรดตรวจสอบว่าเซิร์ฟเวอร์ยังทำงานอยู่แล้วลองอีกครั้ง", "การเชื่อมต่อผู้เล่นหลายคนขาดหาย กำลังกลับสู่เมนูหลัก", "เซิร์ฟเวอร์ผู้เล่นหลายคนแจ้งข้อผิดพลาด", "ได้รับการตอบกลับที่ไม่ถูกต้องจากเซิร์ฟเวอร์ผู้เล่นหลายคน"],
+                vi: ["Không có kết nối Internet. Hãy kết nối rồi thử lại.", "Không thể kết nối máy chủ nhiều người chơi. Hãy kiểm tra máy chủ đang chạy rồi thử lại.", "Máy chủ nhiều người chơi không phản hồi. Hãy kiểm tra máy chủ rồi thử lại.", "Kết nối đã đóng. Hãy kiểm tra máy chủ còn hoạt động rồi thử lại.", "Đã mất kết nối nhiều người chơi. Đang quay lại menu chính.", "Máy chủ nhiều người chơi báo lỗi.", "Nhận được phản hồi không hợp lệ từ máy chủ nhiều người chơi."],
+                id: ["Tidak ada koneksi internet. Sambungkan ke internet lalu coba lagi.", "Tidak dapat menghubungi server multipemain. Pastikan server berjalan lalu coba lagi.", "Server multipemain tidak merespons. Pastikan server berjalan lalu coba lagi.", "Koneksi ditutup. Pastikan server masih berjalan lalu coba lagi.", "Koneksi multipemain terputus. Kembali ke menu utama.", "Server multipemain melaporkan kesalahan.", "Menerima respons yang tidak valid dari server multipemain."],
+                ro: ["Nu există conexiune la internet. Conectează-te și încearcă din nou.", "Serverul multiplayer nu poate fi accesat. Verifică dacă funcționează și încearcă din nou.", "Serverul multiplayer nu a răspuns. Verifică dacă funcționează și încearcă din nou.", "Conexiunea s-a închis. Verifică dacă serverul încă funcționează și încearcă din nou.", "Conexiunea multiplayer s-a pierdut. Revenire la meniul principal.", "Serverul multiplayer a raportat o eroare.", "Răspuns nevalid primit de la serverul multiplayer."],
+                hu: ["Nincs internetkapcsolat. Csatlakozz az internethez, majd próbáld újra.", "Nem érhető el a többjátékos szerver. Ellenőrizd, hogy fut-e, majd próbáld újra.", "A többjátékos szerver nem válaszolt. Ellenőrizd, hogy fut-e, majd próbáld újra.", "A kapcsolat megszakadt. Ellenőrizd, hogy a szerver még fut-e, majd próbáld újra.", "Megszakadt a többjátékos kapcsolat. Visszatérés a főmenübe.", "A többjátékos szerver hibát jelzett.", "Érvénytelen válasz érkezett a többjátékos szervertől."],
+                fi: ["Ei internet-yhteyttä. Muodosta yhteys ja yritä uudelleen.", "Moninpelipalvelimeen ei saada yhteyttä. Tarkista, että palvelin on käynnissä, ja yritä uudelleen.", "Moninpelipalvelin ei vastannut. Tarkista, että se on käynnissä, ja yritä uudelleen.", "Yhteys katkesi. Tarkista, että palvelin on yhä käynnissä, ja yritä uudelleen.", "Moninpeliyhteys katkesi. Palataan päävalikkoon.", "Moninpelipalvelin ilmoitti virheestä.", "Moninpelipalvelimelta saatiin virheellinen vastaus."],
+                da: ["Ingen internetforbindelse. Opret forbindelse, og prøv igen.", "Multiplayer-serveren kunne ikke nås. Kontrollér, at den kører, og prøv igen.", "Multiplayer-serveren svarede ikke. Kontrollér, at den kører, og prøv igen.", "Forbindelsen blev lukket. Kontrollér, at serveren stadig kører, og prøv igen.", "Multiplayerforbindelsen gik tabt. Vender tilbage til hovedmenuen.", "Multiplayer-serveren meldte om en fejl.", "Modtog et ugyldigt svar fra multiplayer-serveren."],
+                no: ["Ingen internettilkobling. Koble til internett og prøv igjen.", "Kunne ikke nå flerspillerserveren. Kontroller at den kjører, og prøv igjen.", "Flerspillerserveren svarte ikke. Kontroller at den kjører, og prøv igjen.", "Tilkoblingen ble lukket. Kontroller at serveren fortsatt kjører, og prøv igjen.", "Flerspillertilkoblingen ble brutt. Går tilbake til hovedmenyen.", "Flerspillerserveren meldte om en feil.", "Mottok et ugyldig svar fra flerspillerserveren."],
+                sk: ["Nie je dostupné internetové pripojenie. Pripojte sa a skúste to znova.", "Nedá sa pripojiť k serveru pre viacerých hráčov. Skontrolujte, či beží, a skúste to znova.", "Server pre viacerých hráčov neodpovedá. Skontrolujte, či beží, a skúste to znova.", "Spojenie sa ukončilo. Skontrolujte, či server stále beží, a skúste to znova.", "Spojenie pre viacerých hráčov sa prerušilo. Návrat do hlavnej ponuky.", "Server pre viacerých hráčov nahlásil chybu.", "Zo servera pre viacerých hráčov prišla neplatná odpoveď."],
+                sl: ["Ni internetne povezave. Povežite se in poskusite znova.", "Strežnika za več igralcev ni mogoče doseči. Preverite, ali deluje, in poskusite znova.", "Strežnik za več igralcev se ni odzval. Preverite, ali deluje, in poskusite znova.", "Povezava je bila zaprta. Preverite, ali strežnik še deluje, in poskusite znova.", "Povezava za več igralcev je bila izgubljena. Vračanje v glavni meni.", "Strežnik za več igralcev je sporočil napako.", "Prejet je bil neveljaven odgovor strežnika za več igralcev."],
+                sr: ["Nema internet veze. Povežite se na internet i pokušajte ponovo.", "Nije moguće povezati se sa serverom za više igrača. Proverite da li radi i pokušajte ponovo.", "Server za više igrača ne odgovara. Proverite da li radi i pokušajte ponovo.", "Veza je zatvorena. Proverite da li server još radi i pokušajte ponovo.", "Veza za više igrača je izgubljena. Povratak u glavni meni.", "Server za više igrača je prijavio grešku.", "Primljen je nevažeći odgovor sa servera za više igrača."],
+                hr: ["Nema internetske veze. Poveži se na internet i pokušaj ponovno.", "Nije moguće povezati se s poslužiteljem za više igrača. Provjeri radi li i pokušaj ponovno.", "Poslužitelj za više igrača ne odgovara. Provjeri radi li i pokušaj ponovno.", "Veza je zatvorena. Provjeri radi li poslužitelj i dalje pa pokušaj ponovno.", "Veza za više igrača je izgubljena. Povratak na glavni izbornik.", "Poslužitelj za više igrača prijavio je pogrešku.", "Primljen je nevažeći odgovor s poslužitelja za više igrača."],
+                bg: ["Няма интернет връзка. Свържете се с интернет и опитайте отново.", "Сървърът за мултиплейър не е достъпен. Проверете дали работи и опитайте отново.", "Сървърът за мултиплейър не отговаря. Проверете дали работи и опитайте отново.", "Връзката е затворена. Проверете дали сървърът все още работи и опитайте отново.", "Връзката за мултиплейър е загубена. Връщане към главното меню.", "Сървърът за мултиплейър съобщи за грешка.", "Получен е невалиден отговор от сървъра за мултиплейър."],
+                lt: ["Nėra interneto ryšio. Prisijunkite prie interneto ir bandykite dar kartą.", "Nepavyko pasiekti kelių žaidėjų serverio. Patikrinkite, ar jis veikia, ir bandykite dar kartą.", "Kelių žaidėjų serveris neatsako. Patikrinkite, ar jis veikia, ir bandykite dar kartą.", "Ryšys nutrauktas. Patikrinkite, ar serveris vis dar veikia, ir bandykite dar kartą.", "Nutrūko ryšys su kelių žaidėjų serveriu. Grįžtama į pagrindinį meniu.", "Kelių žaidėjų serveris pranešė apie klaidą.", "Gautas netinkamas atsakymas iš kelių žaidėjų serverio."],
+                lv: ["Nav interneta savienojuma. Pievienojieties internetam un mēģiniet vēlreiz.", "Neizdevās sasniegt vairāku spēlētāju serveri. Pārbaudiet, vai tas darbojas, un mēģiniet vēlreiz.", "Vairāku spēlētāju serveris neatbildēja. Pārbaudiet, vai tas darbojas, un mēģiniet vēlreiz.", "Savienojums tika aizvērts. Pārbaudiet, vai serveris joprojām darbojas, un mēģiniet vēlreiz.", "Zaudēts savienojums ar spēli. Atgriešanās galvenajā izvēlnē.", "Vairāku spēlētāju serveris ziņoja par kļūdu.", "Saņemta nederīga atbilde no vairāku spēlētāju servera."],
+                et: ["Internetiühendus puudub. Loo ühendus ja proovi uuesti.", "Mitmikmänguserveriga ei saa ühendust. Kontrolli, kas see töötab, ja proovi uuesti.", "Mitmikmänguserver ei vastanud. Kontrolli, kas see töötab, ja proovi uuesti.", "Ühendus suleti. Kontrolli, kas server töötab, ja proovi uuesti.", "Mitmikmänguühendus katkes. Naasmine peamenüüsse.", "Mitmikmänguserver teatas veast.", "Mitmikmänguserverilt saadi vigane vastus."],
+                is: ["Engin nettenging. Tengstu við internetið og reyndu aftur.", "Ekki tókst að ná sambandi við fjölspilunarþjóninn. Athugaðu hvort hann sé í gangi og reyndu aftur.", "Fjölspilunarþjónninn svaraði ekki. Athugaðu hvort hann sé í gangi og reyndu aftur.", "Tengingunni var lokað. Athugaðu hvort þjónninn sé enn í gangi og reyndu aftur.", "Fjölspilunartengingin rofnaði. Farið aftur í aðalvalmynd.", "Fjölspilunarþjónninn tilkynnti um villu.", "Ógilt svar barst frá fjölspilunarþjóninum."],
+                af: ["Geen internetverbinding nie. Koppel aan die internet en probeer weer.", "Kon nie die multispelerbediener bereik nie. Kontroleer dat dit loop en probeer weer.", "Die multispelerbediener het nie gereageer nie. Kontroleer dat dit loop en probeer weer.", "Die verbinding is gesluit. Kontroleer dat die bediener steeds loop en probeer weer.", "Die multispelerverbinding is verloor. Keer terug na die hoofkieslys.", "Die multispelerbediener het 'n fout aangemeld.", "Ongeldige antwoord van die multispelerbediener ontvang."],
+                sq: ["Nuk ka lidhje interneti. Lidhu me internetin dhe provo përsëri.", "Nuk u lidh dot me serverin për shumë lojtarë. Kontrollo nëse funksionon dhe provo përsëri.", "Serveri për shumë lojtarë nuk u përgjigj. Kontrollo nëse funksionon dhe provo përsëri.", "Lidhja u mbyll. Kontrollo nëse serveri vazhdon të funksionojë dhe provo përsëri.", "Lidhja me lojën u ndërpre. Kthim në menynë kryesore.", "Serveri për shumë lojtarë raportoi një gabim.", "U mor një përgjigje e pavlefshme nga serveri për shumë lojtarë."],
+                hy: ["Ինտերնետ կապ չկա։ Միացեք ինտերնետին և կրկին փորձեք։", "Չհաջողվեց միանալ բազմախաղացողի սերվերին։ Ստուգեք՝ արդյոք այն աշխատում է, և կրկին փորձեք։", "Բազմախաղացողի սերվերը չի արձագանքել։ Ստուգեք այն և կրկին փորձեք։", "Կապը փակվել է։ Ստուգեք՝ արդյոք սերվերը դեռ աշխատում է, և կրկին փորձեք։", "Կապը խաղի հետ ընդհատվել է։ Վերադարձ գլխավոր ընտրացանկ։", "Բազմախաղացողի սերվերը սխալ է հաղորդել։", "Բազմախաղացողի սերվերից անվավեր պատասխան է ստացվել։"],
+                az: ["İnternet bağlantısı yoxdur. İnternetə qoşulub yenidən cəhd edin.", "Çoxoyunçulu serverə çatmaq olmadı. İşlədiyini yoxlayıb yenidən cəhd edin.", "Çoxoyunçulu server cavab vermədi. İşlədiyini yoxlayıb yenidən cəhd edin.", "Bağlantı bağlandı. Serverin işlədiyini yoxlayıb yenidən cəhd edin.", "Çoxoyunçulu bağlantı kəsildi. Əsas menyuya qayıdılır.", "Çoxoyunçulu server xəta bildirdi.", "Çoxoyunçulu serverdən yanlış cavab alındı."],
+                be: ["Няма падключэння да інтэрнэту. Падключыцеся і паспрабуйце зноў.", "Не ўдалося падключыцца да сервера гульні. Праверце, ці працуе ён, і паспрабуйце зноў.", "Сервер гульні не адказаў. Праверце, ці працуе ён, і паспрабуйце зноў.", "Злучэнне закрыта. Праверце, ці працуе сервер, і паспрабуйце зноў.", "Злучэнне з гульнёй страчана. Вяртанне ў галоўнае меню.", "Сервер шматкарыстальніцкай гульні паведаміў пра памылку.", "Атрыманы некарэктны адказ ад сервера гульні."],
+                bs: ["Nema internetske veze. Povežite se na internet i pokušajte ponovo.", "Nije moguće povezati se sa serverom za više igrača. Provjerite radi li i pokušajte ponovo.", "Server za više igrača ne odgovara. Provjerite radi li i pokušajte ponovo.", "Veza je zatvorena. Provjerite radi li server još uvijek i pokušajte ponovo.", "Veza za više igrača je izgubljena. Povratak u glavni meni.", "Server za više igrača je prijavio grešku.", "Primljen je nevažeći odgovor sa servera za više igrača."],
+                ca: ["No hi ha connexió a Internet. Connecta't i torna-ho a provar.", "No s'ha pogut accedir al servidor multijugador. Comprova que funcioni i torna-ho a provar.", "El servidor multijugador no ha respost. Comprova que funcioni i torna-ho a provar.", "S'ha tancat la connexió. Comprova que el servidor encara funcioni i torna-ho a provar.", "S'ha perdut la connexió multijugador. Tornant al menú principal.", "El servidor multijugador ha notificat un error.", "S'ha rebut una resposta no vàlida del servidor multijugador."],
+                eu: ["Ez dago Interneteko konexiorik. Konektatu Internetera eta saiatu berriro.", "Ezin izan da jokalari anitzeko zerbitzaria aurkitu. Egiaztatu martxan dagoela eta saiatu berriro.", "Jokalari anitzeko zerbitzariak ez du erantzun. Egiaztatu martxan dagoela eta saiatu berriro.", "Konexioa itxi da. Egiaztatu zerbitzaria martxan dagoela eta saiatu berriro.", "Jokalari anitzeko konexioa galdu da. Menu nagusira itzultzen.", "Jokalari anitzeko zerbitzariak errore bat jakinarazi du.", "Erantzun baliogabea jaso da jokalari anitzeko zerbitzaritik."],
+                gl: ["Non hai conexión a Internet. Conéctate e téntao de novo.", "Non se puido acceder ao servidor multixogador. Comproba que estea funcionando e téntao de novo.", "O servidor multixogador non respondeu. Comproba que estea funcionando e téntao de novo.", "Pechouse a conexión. Comproba que o servidor siga funcionando e téntao de novo.", "Perdeuse a conexión multixogador. Volvendo ao menú principal.", "O servidor multixogador informou dun erro.", "Recibiuse unha resposta non válida do servidor multixogador."],
+                ka: ["ინტერნეტთან კავშირი არ არის. დაუკავშირდით ინტერნეტს და სცადეთ ხელახლა.", "მრავალმოთამაშიან სერვერთან დაკავშირება ვერ მოხერხდა. შეამოწმეთ, მუშაობს თუ არა და სცადეთ ხელახლა.", "მრავალმოთამაშიანმა სერვერმა არ უპასუხა. შეამოწმეთ სერვერი და სცადეთ ხელახლა.", "კავშირი დაიხურა. შეამოწმეთ, მუშაობს თუ არა სერვერი და სცადეთ ხელახლა.", "მრავალმოთამაშიანი კავშირი დაიკარგა. მთავარ მენიუში დაბრუნება.", "მრავალმოთამაშიანმა სერვერმა შეცდომა დააფიქსირა.", "მრავალმოთამაშიანი სერვერიდან არასწორი პასუხი მივიღეთ."],
+                gu: ["ઇન્ટરનેટ કનેક્શન નથી. ઇન્ટરનેટ સાથે જોડાઈ ફરી પ્રયાસ કરો.", "મલ્ટિપ્લેયર સર્વર સુધી પહોંચી શકાયું નથી. તે ચાલુ છે કે નહીં તપાસી ફરી પ્રયાસ કરો.", "મલ્ટિપ્લેયર સર્વરે જવાબ આપ્યો નથી. તે ચાલુ છે કે નહીં તપાસી ફરી પ્રયાસ કરો.", "કનેક્શન બંધ થયું. સર્વર હજી ચાલુ છે કે નહીં તપાસી ફરી પ્રયાસ કરો.", "મલ્ટિપ્લેયર કનેક્શન તૂટી ગયું. મુખ્ય મેનૂ પર પાછા ફરી રહ્યા છીએ.", "મલ્ટિપ્લેયર સર્વરે ભૂલ જણાવી.", "મલ્ટિપ્લેયર સર્વર તરફથી અમાન્ય જવાબ મળ્યો."],
+                ht: ["Pa gen koneksyon entènèt. Konekte ak entènèt la epi eseye ankò.", "Nou pa ka jwenn sèvè multijwè a. Verifye li ap mache epi eseye ankò.", "Sèvè multijwè a pa reponn. Verifye li ap mache epi eseye ankò.", "Koneksyon an fèmen. Verifye sèvè a toujou ap mache epi eseye ankò.", "Koneksyon multijwè a pèdi. Retounen nan meni prensipal la.", "Sèvè multijwè a rapòte yon erè.", "Nou resevwa yon repons ki pa valab nan men sèvè multijwè a."],
+                km: ["គ្មានការតភ្ជាប់អ៊ីនធឺណិតទេ។ សូមភ្ជាប់អ៊ីនធឺណិត ហើយព្យាយាមម្តងទៀត។", "មិនអាចទៅដល់ម៉ាស៊ីនមេអ្នកលេងច្រើនបានទេ។ ពិនិត្យថាវាកំពុងដំណើរការ ហើយព្យាយាមម្តងទៀត។", "ម៉ាស៊ីនមេអ្នកលេងច្រើនមិនបានឆ្លើយតបទេ។ ពិនិត្យម៉ាស៊ីនមេ ហើយព្យាយាមម្តងទៀត។", "ការតភ្ជាប់ត្រូវបានបិទ។ ពិនិត្យថាម៉ាស៊ីនមេនៅដំណើរការ ហើយព្យាយាមម្តងទៀត។", "ការតភ្ជាប់អ្នកលេងច្រើនបានដាច់។ កំពុងត្រឡប់ទៅម៉ឺនុយមេ។", "ម៉ាស៊ីនមេអ្នកលេងច្រើនបានរាយការណ៍កំហុស។", "បានទទួលការឆ្លើយតបមិនត្រឹមត្រូវពីម៉ាស៊ីនមេអ្នកលេងច្រើន។"],
+                lo: ["ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ. ເຊື່ອມຕໍ່ແລ້ວລອງອີກຄັ້ງ.", "ບໍ່ສາມາດເຂົ້າຫາເຊີບເວີຫຼາຍຜູ້ຫຼິ້ນໄດ້. ກວດເບິ່ງວ່າເຊີບເວີເຮັດວຽກແລ້ວລອງອີກຄັ້ງ.", "ເຊີບເວີຫຼາຍຜູ້ຫຼິ້ນບໍ່ຕອບສະໜອງ. ກວດເບິ່ງແລ້ວລອງອີກຄັ້ງ.", "ການເຊື່ອມຕໍ່ຖືກປິດ. ກວດເບິ່ງວ່າເຊີບເວີຍັງເຮັດວຽກແລ້ວລອງອີກຄັ້ງ.", "ການເຊື່ອມຕໍ່ຫຼາຍຜູ້ຫຼິ້ນຂາດ. ກຳລັງກັບໄປເມນູຫຼັກ.", "ເຊີບເວີຫຼາຍຜູ້ຫຼິ້ນແຈ້ງຂໍ້ຜິດພາດ.", "ໄດ້ຮັບຄຳຕອບທີ່ບໍ່ຖືກຕ້ອງຈາກເຊີບເວີຫຼາຍຜູ້ຫຼິ້ນ."],
+                mk: ["Нема интернет-врска. Поврзете се на интернет и обидете се повторно.", "Не може да се пристапи до серверот за повеќе играчи. Проверете дали работи и обидете се повторно.", "Серверот за повеќе играчи не одговори. Проверете дали работи и обидете се повторно.", "Врската беше затворена. Проверете дали серверот сè уште работи и обидете се повторно.", "Врската за повеќе играчи е изгубена. Враќање во главното мени.", "Серверот за повеќе играчи пријави грешка.", "Примен е неважечки одговор од серверот за повеќе играчи."],
+                ml: ["ഇന്റർനെറ്റ് കണക്ഷനില്ല. കണക്റ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.", "മൾട്ടിപ്ലെയർ സെർവറിലെത്താനായില്ല. സെർവർ പ്രവർത്തിക്കുന്നുണ്ടോ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.", "മൾട്ടിപ്ലെയർ സെർവർ പ്രതികരിച്ചില്ല. സെർവർ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.", "കണക്ഷൻ അടച്ചു. സെർവർ ഇപ്പോഴും പ്രവർത്തിക്കുന്നുണ്ടോ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.", "മൾട്ടിപ്ലെയർ കണക്ഷൻ നഷ്ടപ്പെട്ടു. പ്രധാന മെനുവിലേക്ക് മടങ്ങുന്നു.", "മൾട്ടിപ്ലെയർ സെർവർ ഒരു പിശക് റിപ്പോർട്ട് ചെയ്തു.", "മൾട്ടിപ്ലെയർ സെർവറിൽ നിന്ന് അസാധുവായ മറുപടി ലഭിച്ചു."],
+                mr: ["इंटरनेट कनेक्शन नाही. इंटरनेटशी जोडून पुन्हा प्रयत्न करा.", "मल्टिप्लेअर सर्व्हरशी संपर्क होऊ शकला नाही. सर्व्हर सुरू आहे का तपासून पुन्हा प्रयत्न करा.", "मल्टिप्लेअर सर्व्हरने प्रतिसाद दिला नाही. सर्व्हर सुरू आहे का तपासून पुन्हा प्रयत्न करा.", "कनेक्शन बंद झाले. सर्व्हर अजून सुरू आहे का तपासून पुन्हा प्रयत्न करा.", "मल्टिप्लेअर कनेक्शन तुटले. मुख्य मेनूवर परत जात आहे.", "मल्टिप्लेअर सर्व्हरने त्रुटी कळवली.", "मल्टिप्लेअर सर्व्हरकडून अवैध प्रतिसाद मिळाला."],
+                mn: ["Интернет холболт алга. Интернэтэд холбогдоод дахин оролдоно уу.", "Олон тоглогчийн серверт холбогдож чадсангүй. Сервер ажиллаж байгаа эсэхийг шалгаад дахин оролдоно уу.", "Олон тоглогчийн сервер хариу өгсөнгүй. Серверийг шалгаад дахин оролдоно уу.", "Холболт тасарлаа. Сервер ажиллаж байгаа эсэхийг шалгаад дахин оролдоно уу.", "Олон тоглогчийн холболт тасарлаа. Үндсэн цэс рүү буцаж байна.", "Олон тоглогчийн сервер алдаа мэдээллээ.", "Олон тоглогчийн серверээс буруу хариу ирлээ."],
+                ne: ["इन्टरनेट जडान छैन। इन्टरनेटमा जोडिएर फेरि प्रयास गर्नुहोस्।", "मल्टिप्लेयर सर्भरमा पुग्न सकिएन। सर्भर चलिरहेको छ कि छैन जाँचेर फेरि प्रयास गर्नुहोस्।", "मल्टिप्लेयर सर्भरले जवाफ दिएन। सर्भर जाँचेर फेरि प्रयास गर्नुहोस्।", "जडान बन्द भयो। सर्भर अझै चलिरहेको छ कि छैन जाँचेर फेरि प्रयास गर्नुहोस्।", "मल्टिप्लेयर जडान हरायो। मुख्य मेनुमा फर्किँदैछ।", "मल्टिप्लेयर सर्भरले त्रुटि बतायो।", "मल्टिप्लेयर सर्भरबाट अमान्य जवाफ प्राप्त भयो।"],
+                ur: ["انٹرنیٹ کنکشن نہیں ہے۔ انٹرنیٹ سے جڑ کر دوبارہ کوشش کریں۔", "ملٹی پلیئر سرور تک رسائی نہیں ہو سکی۔ سرور چل رہا ہے یا نہیں دیکھ کر دوبارہ کوشش کریں۔", "ملٹی پلیئر سرور نے جواب نہیں دیا۔ سرور چیک کرکے دوبارہ کوشش کریں۔", "کنکشن بند ہو گیا۔ سرور چل رہا ہے یا نہیں دیکھ کر دوبارہ کوشش کریں۔", "ملٹی پلیئر کنکشن ختم ہو گیا۔ مرکزی مینو پر واپس جا رہے ہیں۔", "ملٹی پلیئر سرور نے خرابی کی اطلاع دی۔", "ملٹی پلیئر سرور سے غلط جواب موصول ہوا۔"],
+                sw: ["Hakuna muunganisho wa intaneti. Unganisha intaneti kisha ujaribu tena.", "Haikuwezekana kufikia seva ya wachezaji wengi. Hakikisha inafanya kazi kisha ujaribu tena.", "Seva ya wachezaji wengi haikujibu. Hakikisha inafanya kazi kisha ujaribu tena.", "Muunganisho umefungwa. Hakikisha seva bado inafanya kazi kisha ujaribu tena.", "Muunganisho wa wachezaji wengi umepotea. Inarudi kwenye menyu kuu.", "Seva ya wachezaji wengi imeripoti hitilafu.", "Jibu lisilo sahihi limepokelewa kutoka kwa seva ya wachezaji wengi."],
+                cy: ["Dim cysylltiad rhyngrwyd. Cysylltwch â'r rhyngrwyd a rhowch gynnig arall arni.", "Methu cyrraedd y gweinydd aml-chwaraewr. Gwiriwch ei fod yn rhedeg a rhowch gynnig arall arni.", "Ni wnaeth y gweinydd aml-chwaraewr ymateb. Gwiriwch ei fod yn rhedeg a rhowch gynnig arall arni.", "Cafodd y cysylltiad ei gau. Gwiriwch fod y gweinydd yn dal i redeg a rhowch gynnig arall arni.", "Collwyd y cysylltiad aml-chwaraewr. Yn dychwelyd i'r brif ddewislen.", "Adroddodd y gweinydd aml-chwaraewr wall.", "Cafwyd ymateb annilys gan y gweinydd aml-chwaraewr."]
+            };
+
             const BATTLE_TEXT = {
                 en: { battleRound: "ROUND {round}", battleScore: "ROUNDS WON • YOU {you} — OPPONENT {opponent}", battleHealth: "{hp}/100 HP", battleRoundWon: "ROUND WON", battleRoundLost: "ROUND LOST", battleTieRound: "ROUND DRAW", battleMatchWon: "MATCH WON", battleMatchLost: "MATCH LOST", battleFinalScore: "FINAL SCORE\nYOU {you} — OPPONENT {opponent}", battleMainMenu: "MAIN MENU", battleEliminated: "YOU HAVE BEEN ELIMINATED", battleEliminatedWaiting: "Waiting for the round to finish..." },
                 zh: { battleRound: "第 {round} 回合", battleScore: "回合胜利 • 你 {you} — 对手 {opponent}", battleHealth: "{hp}/100 生命值", battleRoundWon: "回合胜利", battleRoundLost: "回合失败", battleTieRound: "回合平局", battleMatchWon: "比赛胜利", battleMatchLost: "比赛失败", battleFinalScore: "最终比分\n你 {you} — 对手 {opponent}", battleMainMenu: "主菜单", battleEliminated: "你已被淘汰", battleEliminatedWaiting: "等待本回合结束……" },
@@ -5375,6 +5579,8 @@
                     btnRumbleTest: 'emp',
                     btnMenuSettings: 'settings',
                     btnMenuQuit: 'close',
+                    btnConfirmMainQuit: 'confirm',
+                    btnCancelMainQuit: 'cancel',
                     btnPauseSettings: 'settings',
                     btnLoadSavedRun: 'load',
                     btnStartNewRun: 'restart',
@@ -5408,22 +5614,6 @@
                     shootButton: 'shoot'
                 };
                 if (idIcons[button.id]) return idIcons[button.id];
-                const label = button.textContent.trim().toLowerCase();
-                if (/^(yes|ja|oui|sí|si|tak|да|はい|是|ใช่|ใช|نعم)$/.test(label)) return 'confirm';
-                if (/^(back|zurück|retour|atrás|volver|назад)$/.test(label)) return 'back';
-                if (/v\\d/.test(label) || /^1\\+\\d/.test(label)) return 'team';
-                if (/team/.test(label)) return 'team';
-                if (/battle/.test(label)) return 'battle';
-                if (/cancel|annul|abbrechen|отмен/.test(label)) return 'cancel';
-                if (/setting|einstell|param|config/.test(label)) return 'settings';
-                if (/home|menu/.test(label)) return 'home';
-                if (/quit|exit/.test(label)) return 'join';
-                if (/save/.test(label)) return 'save';
-                if (/restart|new game/.test(label)) return 'restart';
-                if (/play|start/.test(label)) return 'play';
-                if (/online|room|join/.test(label)) return 'online';
-                if (/power|performance/.test(label)) return 'power';
-                if (/solo/.test(label)) return 'solo';
                 return 'default';
             }
 
@@ -6503,7 +6693,16 @@
 
             function getOnlineText(key, params = {}) {
                 const translations = ONLINE_TEXT[language] || ONLINE_TEXT.en;
+                const modeText = ONLINE_MODE_TEXT[language];
+                const modeTextIndex = ONLINE_MODE_TEXT_KEYS.indexOf(key);
+                const queueText = ONLINE_QUEUE_TEXT[language];
+                const queueTextIndex = ONLINE_QUEUE_TEXT_KEYS.indexOf(key);
+                const queueErrorText = ONLINE_QUEUE_ERROR_TEXT[language];
+                const queueErrorTextIndex = ONLINE_QUEUE_ERROR_TEXT_KEYS.indexOf(key);
                 let template = (BATTLE_TEXT[language] && BATTLE_TEXT[language][key])
+                    || (modeTextIndex >= 0 && modeText && modeText[modeTextIndex])
+                    || (queueTextIndex >= 0 && queueText && queueText[queueTextIndex])
+                    || (queueErrorTextIndex >= 0 && queueErrorText && queueErrorText[queueErrorTextIndex])
                     || translations[key] || ONLINE_TEXT.en[key] || key;
                 if (key === 'battleMainMenu' && !(BATTLE_TEXT[language] && BATTLE_TEXT[language][key])) {
                     template = (LANG[language] || LANG.en).mainMenu || ONLINE_TEXT.en.battleMainMenu;
@@ -6549,6 +6748,10 @@
                 btnOnlineBack.textContent = getOnlineText('back');
                 btnBattleMainMenu.textContent = getOnlineText('battleMainMenu');
                 renderOnlineLobbyStatus();
+                if (!onlineLobbyOverlay.classList.contains('hidden') && !queueWaitStep.classList.contains('hidden')) {
+                    if (queueElapsedInterval) renderQueueStatus();
+                    else queueWaitStatus.textContent = getOnlineText('connecting');
+                }
                 if (!onlineNotification.classList.contains('hidden') && onlineNotificationKey) {
                     onlineNotificationText.textContent = getOnlineText(onlineNotificationKey);
                 }
@@ -6853,54 +7056,19 @@
                 osc.start(now);
                 osc.stop(now + 0.38);
             }
+            const queueSoundAudio = new Audio('Queue%20Sound.mp3');
+            queueSoundAudio.preload = 'auto';
             function playQueueSound() {
-                initAudio();
-                if (!audioCtx) return;
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const now = audioCtx.currentTime;
-                [660, 880].forEach((frequency, index) => {
-                    const start = now + index * 0.13;
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(frequency, start);
-                    gain.gain.setValueAtTime(0.001, start);
-                    gain.gain.linearRampToValueAtTime(0.18 * volHigh, start + 0.025);
-                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.18);
-                    osc.connect(gain).connect(audioCtx.destination);
-                    osc.start(start);
-                    osc.stop(start + 0.2);
-                });
+                const sound = queueSoundAudio.cloneNode();
+                sound.volume = volHigh;
+                sound.play().catch(error => console.error('Unable to play the queue sound:', error));
             }
+            const matchFoundAudio = new Audio('Match%20Found.mp3');
+            matchFoundAudio.preload = 'auto';
             function playMatchFoundSound() {
-                initAudio();
-                if (!audioCtx) return;
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const now = audioCtx.currentTime;
-                const sweep = audioCtx.createOscillator();
-                const sweepGain = audioCtx.createGain();
-                sweep.type = 'sawtooth';
-                sweep.frequency.setValueAtTime(180, now);
-                sweep.frequency.exponentialRampToValueAtTime(1100, now + 0.42);
-                sweepGain.gain.setValueAtTime(0.001, now);
-                sweepGain.gain.linearRampToValueAtTime(0.2 * volHigh, now + 0.08);
-                sweepGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-                sweep.connect(sweepGain).connect(audioCtx.destination);
-                sweep.start(now);
-                sweep.stop(now + 0.52);
-                [880, 1320].forEach((frequency, index) => {
-                    const start = now + 0.34 + index * 0.1;
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(frequency, start);
-                    gain.gain.setValueAtTime(0.001, start);
-                    gain.gain.linearRampToValueAtTime(0.16 * volMid, start + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.24);
-                    osc.connect(gain).connect(audioCtx.destination);
-                    osc.start(start);
-                    osc.stop(start + 0.26);
-                });
+                const sound = matchFoundAudio.cloneNode();
+                sound.volume = volHigh;
+                sound.play().catch(error => console.error('Unable to play the match-found sound:', error));
             }
             function playPewSound(isRed) {
                 if (!audioCtx) return;
@@ -8952,7 +9120,10 @@
             window.addEventListener('keydown', (e) => {
                 keys[e.key.toLowerCase()] = true;
                 if (e.key === 'Shift') {
-                    if (toggleSprint) {
+                    if (onlineMatchType === 'battle') {
+                        sprintHeld = false;
+                        sprintToggleActive = false;
+                    } else if (toggleSprint) {
                         if (!e.repeat) sprintToggleActive = !sprintToggleActive;
                     } else {
                         sprintHeld = true;
@@ -9068,7 +9239,7 @@
                 const shouldShow = visible && mobileMode && running && !dead && !touchDeathActive;
                 [explodeButton, empButton, phaseButton, sprintButton, shootButton].forEach(button => {
                     const restrictedInBattle = onlineMatchType === 'battle'
-                        && button !== sprintButton && button !== shootButton;
+                        && button !== shootButton;
                     button.classList.toggle('visible', shouldShow && !restrictedInBattle);
                 });
                 updateAbilityUI();
@@ -9211,6 +9382,7 @@
 
             sprintButton.addEventListener('pointerdown', (e) => {
                 e.preventDefault();
+                if (onlineMatchType === 'battle') return;
                 mobileSprintToggleEnabled = !mobileSprintToggleEnabled;
                 updateSprintButtonState();
             });
@@ -9675,7 +9847,7 @@
                 if (buttons.some(b => b)) {
                     lastInputMethod = 'controller';
                 }
-                controllerSprintHeld = buttons[BTN_X] || buttons[BTN_Y];
+                controllerSprintHeld = onlineMatchType !== 'battle' && (buttons[BTN_X] || buttons[BTN_Y]);
                 const zRHeld = Boolean(buttons[ZR]);
                 const rightStickX = gp.axes[2] || 0;
                 const rightStickY = gp.axes[3] || 0;
@@ -10750,6 +10922,18 @@
             }
 
             function updateSprint(dt) {
+                if (onlineMatchType === 'battle') {
+                    sprinting = false;
+                    sprintHeld = false;
+                    sprintToggleActive = false;
+                    controllerSprintHeld = false;
+                    mobileSprintHeld = false;
+                    mobileSprintToggleEnabled = false;
+                    stamina = maxStamina;
+                    staminaBar.classList.remove('visible');
+                    updateSprintButtonState();
+                    return;
+                }
                 const joystickMoving = joystickActive && (Math.abs(joystickVector.x) > 0.08 || Math.abs(joystickVector.y) > 0.08);
                 const mobileSprintRequested = mobileSprintToggleEnabled && joystickMoving;
                 const sprintRequested = !battleEliminated
@@ -12469,6 +12653,18 @@
             mask-image: linear-gradient(transparent, #000 12% 88%, transparent);
         }
 
+        #menu.scIntroActive::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            transform-origin: top;
+            background: linear-gradient(180deg, rgba(1, 10, 8, .96), rgba(0, 40, 24, .88) 65%, rgba(0, 255, 128, .5));
+            box-shadow: 0 0 45px rgba(0, 255, 128, .55);
+            animation: scMenuWipe 1.15s .08s cubic-bezier(.76, 0, .24, 1) both;
+        }
+
         #scMenuCombatCanvas {
             position: absolute;
             inset: 0;
@@ -12714,6 +12910,18 @@
             }
         }
 
+        @keyframes scMenuWipe {
+            from {
+                transform: scaleY(1);
+                opacity: 1;
+            }
+
+            to {
+                transform: scaleY(0);
+                opacity: .8;
+            }
+        }
+
         @keyframes scStatusBlink {
             50% {
                 opacity: .35;
@@ -12746,7 +12954,8 @@
             #menu.scIntroActive #titleMain,
             #menu.scIntroActive .sc-intro-status,
             #menu.scIntroActive .buttonRow .btn,
-            #menu.scIntroActive #btnMenuQuit {
+            #menu.scIntroActive #btnMenuQuit,
+            #menu.scIntroActive::after {
                 animation-duration: .01ms !important;
                 animation-delay: 0ms !important;
             }
@@ -12764,22 +12973,6 @@
             const menu = document.getElementById("menu");
             if (!menu || menu.dataset.scCinematicReady === "1") return;
             menu.dataset.scCinematicReady = "1";
-
-            const title = document.getElementById("titleMain");
-            if (title) {
-                const wrap = title.parentElement;
-                if (wrap) {
-                    wrap.classList.add("sc-title-wrap");
-                    const kicker = document.createElement("div");
-                    kicker.className = "sc-intro-kicker";
-                    kicker.textContent = "TACTICAL RESPONSE UNIT";
-                    wrap.insertBefore(kicker, title);
-                    const status = document.createElement("div");
-                    status.className = "sc-intro-status";
-                    status.innerHTML = "<i></i><span>CONTAINMENT BREACH // LIVE COMBAT ZONE</span>";
-                    title.insertAdjacentElement("afterend", status);
-                }
-            }
 
             const canvas = document.createElement("canvas");
             canvas.id = "scMenuCombatCanvas";
