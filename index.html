@@ -60,6 +60,10 @@
             display: none !important;
         }
 
+        #menu.scIntroActive:not(.scIntroReady) {
+            visibility: hidden;
+        }
+
         h1 {
             font-size: 3rem;
             letter-spacing: 0.2rem;
@@ -1221,8 +1225,9 @@
             pointer-events: none;
             z-index: 7;
             opacity: 0;
-            background: transparent;
-            transition: opacity 0.12s linear;
+            background:
+                radial-gradient(circle at var(--electro-x, 50%) var(--electro-y, 50%), rgba(235, 255, 255, .34), rgba(77, 233, 255, .14) 10%, transparent 34%),
+                radial-gradient(ellipse at center, transparent 38%, rgba(32, 190, 255, .08) 100%);
         }
 
         .abilityScreenFx {
@@ -2234,34 +2239,109 @@
         }
 
         .deathTitle {
-            font-size: 3rem;
+            position: relative;
+            display: inline-block;
+            max-width: 92vw;
+            padding: .16em .42em;
+            font-size: clamp(2.35rem, 7vw, 4.5rem);
+            line-height: .98;
+            text-wrap: balance;
             color: #ff0033;
-            text-shadow: 0 0 20px #ff0033, 0 0 40px #ff0033;
-            animation: pulseText 1s infinite alternate;
-            margin-bottom: 0.5rem;
+            text-shadow: 0 0 14px #ff0033, 0 0 34px #ff0033, 0 0 70px rgba(255, 0, 51, .5);
+            margin: 0 0 .75rem;
+            letter-spacing: .06em;
             opacity: 0;
-            transform: scale(0.7);
-            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            transform: translateY(34px) scale(.72);
+            filter: blur(12px);
+        }
+
+        .deathTitle::before,
+        .deathTitle::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: .34em;
+            height: .34em;
+            border: 2px solid currentColor;
+            pointer-events: none;
+        }
+
+        .deathTitle::before {
+            left: 0;
+            border-right: 0;
+            border-bottom: 0;
+            transform: translate(-35%, -50%);
+        }
+
+        .deathTitle::after {
+            right: 0;
+            border-left: 0;
+            border-top: 0;
+            transform: translate(35%, -50%);
         }
 
         .deathTitle.show {
             opacity: 1;
-            transform: scale(1);
+            animation:
+                deathTitleEnter 1.15s .08s cubic-bezier(.16, 1, .3, 1) both,
+                deathTitleGlow 1.5s 1.25s ease-in-out infinite alternate;
         }
 
         .deathTitle.electrocuted {
             color: #ffe600;
-            text-shadow: 0 0 20px #ffe600, 0 0 40px #ffe600;
+            text-shadow: 0 0 10px #fff, 0 0 22px #ffe600, 0 0 52px #00d9ff;
         }
 
-        @keyframes pulseText {
-            from {
-                transform: scale(1);
-            }
+        .deathTitle.electrocuted::before,
+        .deathTitle.electrocuted::after {
+            top: -.24em;
+            left: -.22em;
+            width: calc(100% + .44em);
+            height: calc(100% + .48em);
+            opacity: 0;
+            border: 0;
+            background:
+                radial-gradient(circle, #fff 0 1px, #79f5ff 1.5px, transparent 4px) 2% 18% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #79f5ff 1.5px, transparent 4px) 18% 0 / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #ffe600 1.5px, transparent 4px) 44% 4% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #79f5ff 1.5px, transparent 4px) 72% 0 / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #ffe600 1.5px, transparent 4px) 98% 20% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #79f5ff 1.5px, transparent 4px) 100% 76% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #ffe600 1.5px, transparent 4px) 70% 100% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #79f5ff 1.5px, transparent 4px) 28% 100% / 8px 8px no-repeat,
+                radial-gradient(circle, #fff 0 1px, #ffe600 1.5px, transparent 4px) 0 74% / 8px 8px no-repeat;
+            filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 12px #00d9ff);
+        }
 
-            to {
-                transform: scale(1.08);
-            }
+        .deathTitle.electrocuted::before {
+            animation: deathTextSpark .38s steps(2, end) infinite;
+        }
+
+        .deathTitle.electrocuted::after {
+            transform: scale(.88) rotate(12deg);
+            animation: deathTextSpark .31s .13s steps(2, end) infinite reverse;
+        }
+
+        .deathOverlay::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            background:
+                radial-gradient(ellipse at center, rgba(28, 0, 6, .18), rgba(0, 0, 0, .94) 76%),
+                radial-gradient(circle at center, transparent 0 12%, rgba(255, 0, 51, .24) 12.3% 12.6%, transparent 13% 28%, rgba(255, 0, 51, .12) 28.3% 28.5%, transparent 29%);
+        }
+
+        .deathOverlay:not(.hidden)::before {
+            animation: deathBackdropEnter .85s ease-out both;
+        }
+
+        .deathOverlay.electrocutedDeath::before {
+            background:
+                radial-gradient(ellipse at center, rgba(14, 24, 21, .22), rgba(0, 0, 0, .94) 76%),
+                radial-gradient(circle at center, transparent 0 12%, rgba(0, 217, 255, .36) 12.3% 12.6%, transparent 13% 28%, rgba(255, 230, 0, .18) 28.3% 28.5%, transparent 29%);
         }
 
         .deathSurvived {
@@ -2311,7 +2391,12 @@
 
         .deathOverlayContent {
             position: relative;
-            z-index: 1;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .deathOverlay:not(.hidden) .deathOverlayContent {
+            animation: deathPanelEnter .8s .04s cubic-bezier(.16, 1, .3, 1) both;
         }
 
         @keyframes deathSurvivedPulse {
@@ -2331,15 +2416,165 @@
             gap: 1rem;
             justify-content: center;
             margin-top: 1rem;
-            transform: translateY(40px);
-            opacity: 0;
-            animation: slideInButtons 0.5s 0.3s forwards;
+            opacity: 1;
+            transform: none;
         }
 
-        @keyframes slideInButtons {
-            to {
-                transform: translateY(0);
+        .deathOverlay:not(.hidden) .deathButtons .btn {
+            opacity: 0;
+            animation: deathButtonEnter .68s cubic-bezier(.16, 1, .3, 1) both;
+        }
+
+        .deathOverlay:not(.hidden) .deathButtons .btn:nth-child(1) {
+            animation-delay: .75s;
+        }
+
+        .deathOverlay:not(.hidden) .deathButtons .btn:nth-child(2) {
+            animation-delay: .9s;
+        }
+
+        .deathOverlay:not(.hidden) .deathButtons .btn:nth-child(3) {
+            animation-delay: 1.05s;
+        }
+
+        @keyframes deathBackdropEnter {
+            0% {
+                opacity: 0;
+                transform: scale(1.12);
+            }
+
+            55% {
                 opacity: 1;
+                transform: scale(.99);
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes deathPanelEnter {
+            0% {
+                opacity: 0;
+                transform: perspective(900px) translateY(42px) rotateX(10deg) scale(.88);
+                filter: blur(10px);
+            }
+
+            65% {
+                opacity: 1;
+                transform: perspective(900px) translateY(-5px) rotateX(-1deg) scale(1.015);
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 1;
+                transform: perspective(900px) translateY(0) rotateX(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes deathTitleEnter {
+            0% {
+                opacity: 0;
+                transform: perspective(700px) rotateX(42deg) translateY(38px) scale(.7);
+                filter: blur(14px) brightness(2.4);
+                clip-path: inset(0 50% 0 50%);
+            }
+
+            58% {
+                opacity: 1;
+                transform: perspective(700px) rotateX(-6deg) translateY(-5px) scale(1.055);
+                filter: blur(0) brightness(1.8);
+                clip-path: inset(-8% -6% -8% -6%);
+            }
+
+            78% {
+                transform: perspective(700px) rotateX(2deg) scale(.99);
+                filter: brightness(1.12);
+            }
+
+            100% {
+                opacity: 1;
+                transform: perspective(700px) rotateX(0) translateY(0) scale(1);
+                filter: brightness(1);
+                clip-path: inset(-8% -6% -8% -6%);
+            }
+        }
+
+        @keyframes deathTitleGlow {
+            from {
+                text-shadow: 0 0 12px currentColor, 0 0 28px currentColor;
+            }
+
+            to {
+                text-shadow: 0 0 22px currentColor, 0 0 48px currentColor, 0 0 80px rgba(255, 0, 51, .38);
+            }
+        }
+
+        @keyframes deathButtonEnter {
+            0% {
+                opacity: 0;
+                transform: translateY(34px) scale(.82);
+                filter: blur(7px);
+            }
+
+            72% {
+                opacity: 1;
+                transform: translateY(-4px) scale(1.04);
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes deathTextSpark {
+            0%, 62%, 100% {
+                opacity: 0;
+            }
+
+            14%, 28% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .deathTitle {
+                font-size: clamp(1.9rem, 8vw, 3.2rem);
+            }
+
+            .deathButtons {
+                gap: .55rem;
+                flex-wrap: wrap;
+                padding: 0 1rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .deathOverlay:not(.hidden)::before,
+            .deathOverlay:not(.hidden) .deathOverlayContent,
+            .deathOverlay:not(.hidden) .deathButtons .btn,
+            .deathTitle.show,
+            .deathTitle.electrocuted::before,
+            .deathTitle.electrocuted::after {
+                animation-duration: .01ms !important;
+                animation-delay: 0ms !important;
+            }
+
+            .deathOverlay:not(.hidden)::before {
+                opacity: 1;
+                transform: none;
+            }
+
+            .deathTitle.show,
+            .deathOverlay:not(.hidden) .deathButtons .btn {
+                opacity: 1;
+                filter: none;
+                clip-path: none;
             }
         }
 
@@ -6714,6 +6949,70 @@
                     Object.prototype.hasOwnProperty.call(params, name) ? params[name] : match);
             }
 
+            const MENU_BRANDING_TRANSLATIONS = {
+                en: ['TACTICAL RESPONSE UNIT', 'CONTAINMENT BREACH // LIVE COMBAT ZONE'],
+                zh: ['战术应急小组', '收容失效 // 实时战斗区域'],
+                es: ['UNIDAD DE RESPUESTA TÁCTICA', 'CONTENCIÓN ROTA // ZONA DE COMBATE ACTIVA'],
+                it: ['UNITÀ DI RISPOSTA TATTICA', 'CONTENIMENTO VIOLATO // ZONA DI COMBATTIMENTO ATTIVA'],
+                fr: ['UNITÉ D’INTERVENTION TACTIQUE', 'BRÈCHE DE CONFINEMENT // ZONE DE COMBAT ACTIVE'],
+                ru: ['ТАКТИЧЕСКОЕ ПОДРАЗДЕЛЕНИЕ', 'НАРУШЕНИЕ ИЗОЛЯЦИИ // ЗОНА БОЕВЫХ ДЕЙСТВИЙ'],
+                ja: ['戦術対応部隊', '封じ込め突破 // 戦闘区域'],
+                de: ['TAKTISCHE EINSATZEINHEIT', 'SICHERHEITSBRUCH // AKTIVE KAMPFZONE'],
+                pt: ['UNIDADE DE RESPOSTA TÁTICA', 'FALHA DE CONTENÇÃO // ZONA DE COMBATE ATIVA'],
+                ko: ['전술 대응 부대', '격리 실패 // 실전 전투 구역'],
+                ar: ['وحدة الاستجابة التكتيكية', 'اختراق الاحتواء // منطقة قتال نشطة'],
+                hi: ['सामरिक प्रतिक्रिया इकाई', 'नियंत्रण भंग // सक्रिय युद्ध क्षेत्र'],
+                bn: ['কৌশলগত প্রতিক্রিয়া ইউনিট', 'নিয়ন্ত্রণ ভঙ্গ // সক্রিয় যুদ্ধক্ষেত্র'],
+                tr: ['TAKTİK MÜDAHALE BİRİMİ', 'KARANTİNA İHLALİ // AKTİF ÇATIŞMA BÖLGESİ'],
+                nl: ['TACTISCHE INTERVENTIE-EENHEID', 'INPERKINGSBREUK // ACTIEVE GEVECHTSZONE'],
+                sv: ['TAKTISK INSATSSTYRKA', 'INNESLUTNINGSBROTT // AKTIV STRIDSZON'],
+                pl: ['TAKTYCZNA JEDNOSTKA REAGOWANIA', 'NARUSZENIE ZABEZPIECZEŃ // AKTYWNA STREFA WALK'],
+                uk: ['ТАКТИЧНИЙ ПІДРОЗДІЛ РЕАГУВАННЯ', 'ПРОРИВ ІЗОЛЯЦІЇ // АКТИВНА ЗОНА БОЙОВИХ ДІЙ'],
+                cs: ['TAKTICKÁ ZÁSAHOVÁ JEDNOTKA', 'NARUŠENÍ KARANTÉNY // AKTIVNÍ BOJOVÁ ZÓNA'],
+                el: ['ΤΑΚΤΙΚΗ ΜΟΝΑΔΑ ΑΠΟΚΡΙΣΗΣ', 'ΠΑΡΑΒΙΑΣΗ ΠΕΡΙΟΡΙΣΜΟΥ // ΕΝΕΡΓΗ ΖΩΝΗ ΜΑΧΗΣ'],
+                he: ['יחידת תגובה טקטית', 'פריצת הסגר // אזור לחימה פעיל'],
+                th: ['หน่วยตอบโต้ทางยุทธวิธี', 'การควบคุมล้มเหลว // เขตปะทะ'],
+                vi: ['ĐƠN VỊ ỨNG PHÓ CHIẾN THUẬT', 'VỠ PHONG TỎA // KHU VỰC GIAO TRANH'],
+                id: ['UNIT RESPONS TAKTIS', 'PENAHANAN BOBOL // ZONA TEMPUR AKTIF'],
+                ro: ['UNITATE DE INTERVENȚIE TACTICĂ', 'BREȘĂ DE IZOLARE // ZONĂ DE LUPTĂ ACTIVĂ'],
+                hu: ['TAKTIKAI BEAVATKOZÓ EGYSÉG', 'A ZÁRLAT MEGSÉRTVE // AKTÍV HARCI ZÓNA'],
+                fi: ['TAKTINEN TORJUNTAYKSIKKÖ', 'ERISTYS MURTUNUT // AKTIIVINEN TAISTELUALUE'],
+                da: ['TAKTISK INDSATSENHED', 'INDESLUTNINGEN BRUDT // AKTIV KAMPZONE'],
+                no: ['TAKTISK INNSATSENHET', 'INNESPERINGEN BRUTT // AKTIV KAMPSONE'],
+                sk: ['TAKTICKÁ ZÁSAHOVÁ JEDNOTKA', 'PORUŠENIE KARANTÉNY // AKTÍVNA BOJOVÁ ZÓNA'],
+                sl: ['TAKTIČNA INTERVENCIJSKA ENOTA', 'PREBOJ ZAPORE // AKTIVNO BOJNO OBMOČJE'],
+                sr: ['ТАКТИЧКА ЈЕДИНИЦА ЗА РЕАГОВАЊЕ', 'ПРОБОЈ ИЗОЛАЦИЈЕ // АКТИВНА БОРБЕНА ЗОНА'],
+                hr: ['TAKTIČKA INTERVENTNA JEDINICA', 'PROBIJENA IZOLACIJA // AKTIVNA BORBENA ZONA'],
+                bg: ['ТАКТИЧЕСКО ЗВЕНО ЗА РЕАГИРАНЕ', 'ПРОБИВ В ИЗОЛАЦИЯТА // АКТИВНА БОЙНА ЗОНА'],
+                lt: ['TAKTINIO REAGAVIMO PADALINYS', 'IZOLIACIJOS PAŽEIDIMAS // AKTYVI KOVOS ZONA'],
+                lv: ['TAKTISKĀ REAĢĒŠANAS VIENĪBA', 'IEROBEŽOJUMA PĀRKĀPUMS // AKTĪVA KAUJAS ZONA'],
+                et: ['TAKTIKALINE KIIRREAGEERIMISÜKSUS', 'ISOLATSIOONI RIKKUMINE // AKTIIVNE LAHINGUTSOON'],
+                is: ['TÆKNILEG VIÐBRAGÐSEINING', 'EINANGRUN ROFIN // VIRKT BARDAGASVÆÐI'],
+                af: ['TAKTIESE REAKSIE-EENHEID', 'AFSONDERING GEBREEK // AKTIEWE GEVEGSZONE'],
+                sq: ['NJËSIA TAKTIKE E REAGIMIT', 'SHKELJE E IZOLIMIT // ZONË AKTIVE LUFTIMI'],
+                hy: ['ՄԱՐՏԱՎԱՐԱԿԱՆ ԱՐՁԱԳԱՆՔՄԱՆ ՋՈԿԱՏ', 'ՄԵԿՈՒՍԱՑՄԱՆ ԽԱԽՏՈՒՄ // ԱԿՏԻՎ ՄԱՐՏԱԿԱՆ ԳՈՏԻ'],
+                az: ['TAKTİKİ CAVAB BÖLMƏSİ', 'TƏCRİDİN POZULMASI // AKTİV DÖYÜŞ ZONASI'],
+                be: ['ТАКТЫЧНАЕ ПАДРАЗДЗЯЛЕННЕ РЭАГАВАННЯ', 'ПАРУШЭННЕ ІЗАЛЯЦЫІ // АКТЫЎНАЯ ЗОНА БАЯВЫХ ДЗЕЯННЯЎ'],
+                bs: ['TAKTIČKA INTERVENTNA JEDINICA', 'PROBOJ IZOLACIJE // AKTIVNA BORBENA ZONA'],
+                ca: ['UNITAT DE RESPOSTA TÀCTICA', 'FUITA DE CONTENCIÓ // ZONA DE COMBAT ACTIVA'],
+                ceb: ['YUNIT SA TAKTIKAL NGA PAGTUBAG', 'NAPAKYAS ANG PAGPUGONG // AKTIBONG SONANG PAKIG-AWAY'],
+                eu: ['ERANTZUN UNITATE TAKTIKOA', 'EUSTE-HAUSTURA // BORROKA-EREMU AKTIBOA'],
+                gl: ['UNIDADE DE RESPOSTA TÁCTICA', 'FALLO DE CONTENCIÓN // ZONA DE COMBATE ACTIVA'],
+                ka: ['ტაქტიკური რეაგირების დანაყოფი', 'შეკავების გარღვევა // აქტიური საბრძოლო ზონა'],
+                gu: ['વ્યૂહાત્મક પ્રતિસાદ એકમ', 'નિયંત્રણ ભંગ // સક્રિય યુદ્ધ ક્ષેત્ર'],
+                ht: ['INITE REPONS TAKTIK', 'KONTWÒL LA KRAZE // ZÒN KONBAT AKTIF'],
+                km: ['អង្គភាពឆ្លើយតបយុទ្ធសាស្ត្រ', 'ការគ្រប់គ្រងបែកធ្លាយ // តំបន់ប្រយុទ្ធសកម្ម'],
+                lo: ['ໜ່ວຍຕອບໂຕ້ທາງຍຸດທະວິທີ', 'ການກັກກັນລົ້ມເຫຼວ // ເຂດສູ້ຮົບ'],
+                mk: ['ТАКТИЧКА ЕДИНИЦА ЗА РЕАГИРАЊЕ', 'ПРОБИЕНА ИЗОЛАЦИЈА // АКТИВНА БОРБЕНА ЗОНА'],
+                ml: ['തന്ത്രപ്രധാന പ്രതികരണ വിഭാഗം', 'നിയന്ത്രണവലയം തകർന്നു // സജീവ പോരാട്ട മേഖല'],
+                mr: ['रणनीतिक प्रतिसाद पथक', 'नियंत्रण भंग // सक्रिय युद्ध क्षेत्र'],
+                mn: ['ТАКТИКИЙН ХАРИУ АРГА ХЭМЖЭЭНИЙ НЭГЖ', 'ХЯЗГААРЛАЛТ АЛДАГДЛАА // ИДЭВХТЭЙ ТУЛААНЫ БҮС'],
+                ne: ['सामरिक प्रतिक्रिया एकाइ', 'नियन्त्रण भङ्ग // सक्रिय युद्ध क्षेत्र'],
+                ur: ['حکمتِ عملی کا جوابی دستہ', 'محاصرہ ٹوٹ گیا // فعال جنگی علاقہ'],
+                sw: ['KITENGO CHA MAJIBU YA KIMKAKATI', 'KIZUIZI KIMEVUNJIKA // ENEO LA MAPAMBANO'],
+                cy: ['UNED YMYRRYD TACTEGOL', 'TORRI RHEOLAETH // PARTH YMLADD GWEITHREDOL']
+            };
+
             function applyLanguage() {
                 const t = LANG[language] || LANG.en;
                 const gameplayText = {
@@ -6726,6 +7025,9 @@
                 document.documentElement.lang = language;
                 titleMain.textContent = localizedTitle;
                 document.title = localizedTitle;
+                const menuBranding = MENU_BRANDING_TRANSLATIONS[language] || MENU_BRANDING_TRANSLATIONS.en;
+                document.querySelector('#menu .sc-intro-kicker').textContent = menuBranding[0];
+                document.querySelector('#menu .sc-intro-status span').textContent = menuBranding[1];
                 playModeTitle.textContent = getOnlineText('playTitle');
                 btnSoloMode.textContent = getOnlineText('solo');
                 btnOnlineMode.textContent = getOnlineText('online');
@@ -6823,6 +7125,7 @@
                     : t.youDied;
                 deathTitle.textContent = deathMessage;
                 deathTitle.classList.toggle('electrocuted', deathCause === 'electrocuted');
+                deathOverlay.classList.toggle('electrocutedDeath', deathCause === 'electrocuted');
                 btnRestart.textContent = t.restart;
                 btnDeathSettings.textContent = t.settings;
                 btnMainMenu.textContent = t.mainMenu;
@@ -10618,6 +10921,7 @@
 
                 setTimeout(() => {
                     setDeathSurvivedText();
+                    deathOverlay.classList.toggle('electrocutedDeath', deathCause === 'electrocuted');
                     deathOverlay.classList.remove('hidden');
                     deathMenuIndex = 0;
                     updateMenuFocus();
@@ -10645,6 +10949,7 @@
                 if (audioCtx) audioCtx.suspend();
                 applyLanguage();
                 setDeathSurvivedText();
+                deathOverlay.classList.toggle('electrocutedDeath', deathCause === 'electrocuted');
                 deathOverlay.classList.remove('hidden');
                 deathMenuIndex = 0;
                 updateMenuFocus();
@@ -10669,8 +10974,18 @@
 
             function updateElectroFlash(dt) {
                 electroFlashTimer = Math.max(0, electroFlashTimer - dt);
-                electroFlash.style.opacity = '0';
-                electroFlash.classList.add('hidden');
+                if (!touchDeathActive || electroFlashTimer <= 0) {
+                    electroFlash.style.opacity = '0';
+                    electroFlash.classList.add('hidden');
+                    return;
+                }
+                const elapsed = 3 - electroFlashTimer;
+                const surge = Math.max(0, Math.sin(elapsed * 24 + Math.sin(elapsed * 6.5) * 2));
+                const flash = surge > .72 ? ((surge - .72) / .28) ** 2 : 0;
+                electroFlash.style.setProperty('--electro-x', `${(player.x / Math.max(1, canvas.width)) * 100}%`);
+                electroFlash.style.setProperty('--electro-y', `${(player.y / Math.max(1, canvas.height)) * 100}%`);
+                electroFlash.style.opacity = String(flash * .24);
+                electroFlash.classList.remove('hidden');
             }
 
             function drawBackground() {
@@ -10985,13 +11300,11 @@
                     ctx.globalAlpha = 0.48;
                 }
 
-                if (options.touchDeathActive && options.touchDeathTimer < 3) {
-                    const phase = Math.floor(options.touchDeathTimer * 10) % 2;
-                    const fillStyle = phase === 0 ? '#ffffff' : '#000000';
-                    ctx.fillStyle = fillStyle;
-                    ctx.shadowColor = '#ffffff';
-                    ctx.shadowBlur = 18;
-                } else {
+                const electrocuting = options.touchDeathActive && options.touchDeathTimer < 3;
+                const electroPulse = electrocuting
+                    ? .5 + .5 * Math.sin(options.touchDeathTimer * 35 + Math.sin(options.touchDeathTimer * 8) * 2)
+                    : 0;
+                {
                     const grd = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
                     if (teamColor) {
                         const pulse = options.sprinting ? (Math.sin(elapsedGameTime * 20) + 1) / 2 : 0;
@@ -11019,12 +11332,14 @@
                         grd.addColorStop(1, options.ally ? '#2563eb' : options.opposite ? '#ff00aa' : '#00ff66');
                     }
                     ctx.fillStyle = grd;
-                    ctx.shadowColor = teamColor || (options.ally
+                    ctx.shadowColor = electrocuting
+                        ? (electroPulse > .56 ? '#ffffff' : '#00dfff')
+                        : teamColor || (options.ally
                         ? (options.sprinting ? '#2563eb' : '#7c3aed')
                         : options.opposite
                             ? (options.sprinting ? '#0033ff' : '#ff00aa')
                             : (options.sprinting ? '#ff0033' : '#00ff66'));
-                    ctx.shadowBlur = (options.sprinting ? 24 + Math.sin(elapsedGameTime * 20) * 8 : 18) * glowFactor;
+                    ctx.shadowBlur = (electrocuting ? 20 + electroPulse * 28 : options.sprinting ? 24 + Math.sin(elapsedGameTime * 20) * 8 : 18) * glowFactor;
                 }
 
                 ctx.beginPath();
@@ -11036,6 +11351,36 @@
                 }
                 ctx.closePath();
                 ctx.fill();
+                if (electrocuting) {
+                    ctx.globalAlpha = .2 + electroPulse * .42;
+                    ctx.fillStyle = electroPulse > .72 ? '#ffffff' : '#a9faff';
+                    ctx.shadowColor = '#00dfff';
+                    ctx.shadowBlur = (22 + electroPulse * 24) * glowFactor;
+                    ctx.fill();
+
+                    for (let arc = 0; arc < 3; arc++) {
+                        const startAngle = options.touchDeathTimer * (arc % 2 === 0 ? 8 : -6) + arc * 2.1;
+                        const arcLength = .55 + .22 * Math.sin(options.touchDeathTimer * 17 + arc * 4);
+                        const segments = 7;
+                        ctx.beginPath();
+                        for (let segment = 0; segment <= segments; segment++) {
+                            const progress = segment / segments;
+                            const angle = startAngle + progress * arcLength;
+                            const jitter = Math.sin(options.touchDeathTimer * 47 + arc * 11 + segment * 7) * radius * .12;
+                            const arcRadius = radius + 3 + jitter;
+                            const px = Math.cos(angle) * arcRadius;
+                            const py = Math.sin(angle) * arcRadius;
+                            if (segment === 0) ctx.moveTo(px, py);
+                            else ctx.lineTo(px, py);
+                        }
+                        ctx.strokeStyle = arc % 2 === 0 ? '#d9ffff' : '#ffe600';
+                        ctx.lineWidth = 1.4 + electroPulse * 1.2;
+                        ctx.globalAlpha = .45 + electroPulse * .5;
+                        ctx.shadowColor = '#00dfff';
+                        ctx.shadowBlur = (10 + electroPulse * 12) * glowFactor;
+                        ctx.stroke();
+                    }
+                }
                 ctx.restore();
             }
 
@@ -12979,7 +13324,10 @@
             canvas.setAttribute("aria-hidden", "true");
             menu.insertBefore(canvas, menu.firstChild);
             const ctx = canvas.getContext("2d", { alpha: true });
-            if (!ctx) return;
+            if (!ctx) {
+                menu.classList.add("scIntroReady");
+                return;
+            }
 
             const reducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
             let width = 1, height = 1, dpr = 1, lastFrame = 0, elapsed = 0;
@@ -13283,6 +13631,7 @@
             resize();
             window.addEventListener("resize", resize, { passive: true });
             document.addEventListener("visibilitychange", () => { lastFrame = 0; });
+            menu.classList.add("scIntroReady");
             menu.classList.add("scIntroActive");
             window.setTimeout(() => menu.classList.remove("scIntroActive"), 5200);
             requestAnimationFrame(frame);
