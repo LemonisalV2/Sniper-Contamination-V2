@@ -2533,11 +2533,15 @@
         }
 
         @keyframes deathTextSpark {
-            0%, 62%, 100% {
+
+            0%,
+            62%,
+            100% {
                 opacity: 0;
             }
 
-            14%, 28% {
+            14%,
+            28% {
                 opacity: 1;
             }
         }
@@ -2555,6 +2559,7 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
+
             .deathOverlay:not(.hidden)::before,
             .deathOverlay:not(.hidden) .deathOverlayContent,
             .deathOverlay:not(.hidden) .deathButtons .btn,
@@ -11335,10 +11340,10 @@
                     ctx.shadowColor = electrocuting
                         ? (electroPulse > .56 ? '#ffffff' : '#00dfff')
                         : teamColor || (options.ally
-                        ? (options.sprinting ? '#2563eb' : '#7c3aed')
-                        : options.opposite
-                            ? (options.sprinting ? '#0033ff' : '#ff00aa')
-                            : (options.sprinting ? '#ff0033' : '#00ff66'));
+                            ? (options.sprinting ? '#2563eb' : '#7c3aed')
+                            : options.opposite
+                                ? (options.sprinting ? '#0033ff' : '#ff00aa')
+                                : (options.sprinting ? '#ff0033' : '#00ff66'));
                     ctx.shadowBlur = (electrocuting ? 20 + electroPulse * 28 : options.sprinting ? 24 + Math.sin(elapsedGameTime * 20) * 8 : 18) * glowFactor;
                 }
 
