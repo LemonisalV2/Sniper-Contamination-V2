@@ -15,6 +15,7 @@
   "build": {
     "appId": "com.yourname.snipercontaminationgame",
     "productName": "Sniper Contamination",
+    "compression": "store",
     "directories": {
       "output": "C:/SniperBuildNew"
     },
@@ -42,12 +43,14 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
+      "installerHeader": "sniper-installer-header.bmp",
       "installerSidebar": "sniper-contamination-sidebar-v2.bmp",
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
       "include": "installer.nsh",
-      "displayLanguageSelector": true,
+      "createDesktopShortcut": "always",
+      "allowToChangeInstallationDirectory": false,
+      "displayLanguageSelector": false,
       "installerLanguages": [
         "en_US",
         "zh_CN",

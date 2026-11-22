@@ -39,6 +39,10 @@ The game supports keyboard and mouse, touch screens, and gamepads (with rumble),
 
 Solo mode only needs the page to load. The Node.js server is required for anything online (matchmaking, Battle, and Team modes).
 
+### Build the Windows installer
+
+Run `npm run dist` to create the Windows setup executable in `C:\SniperBuildNew`. The installer starts immediately with a titled setup window, a minimize button, no close button, a text-only Cancel action, and a sniper-themed circular indicator whose neon-green trail follows installation progress. Cancel force-closes the installer; after extraction finishes, the needle spins briefly and the label changes to “Almost done” before the game opens. Uncompressed packaging speeds up installation at the cost of a larger setup download; older setup executables retain their original appearance.
+
 ### Playing with other people
 
 To play with others, make the server reachable to them, for example on the same local network or through your hosting provider, and share its URL. Everyone opens that URL, then:
