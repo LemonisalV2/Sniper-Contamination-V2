@@ -37,8 +37,10 @@
 
         #gameContainer {
             position: relative;
-            width: 100vw;
+            width: 100%;
             height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
             background: radial-gradient(circle at center, #050810 0%, #000000 70%);
         }
 
@@ -3583,6 +3585,43 @@
             color: #f8f9fa;
         }
 
+        /* Keep notification colours consistent, but restore the neon treatment in dark mode. */
+        @media (prefers-color-scheme: dark) {
+            .controllerNotification:not(.disconnect):not(.powerSaving):not(.green):not(.grey):not(.battleResultNotification) {
+                background: rgba(0, 18, 32, 0.97);
+                border-color: #00aaff;
+                color: #c9f2ff;
+                box-shadow: 0 0 12px rgba(0, 170, 255, 0.75), 0 0 30px rgba(0, 170, 255, 0.45), inset 0 0 14px rgba(0, 170, 255, 0.16);
+                text-shadow: 0 0 8px rgba(0, 170, 255, 0.85);
+            }
+
+            .controllerNotification.green,
+            .batteryStatusNotif.green {
+                background: rgba(0, 24, 12, 0.97);
+                border-color: #00ff66;
+                color: #caffd9;
+                box-shadow: 0 0 12px rgba(0, 255, 102, 0.8), 0 0 30px rgba(0, 255, 102, 0.48), inset 0 0 14px rgba(0, 255, 102, 0.16);
+                text-shadow: 0 0 8px rgba(0, 255, 102, 0.85);
+            }
+
+            .controllerNotification.disconnect,
+            .controllerNotification.powerSaving {
+                background: rgba(30, 0, 8, 0.97);
+                border-color: #ff334f;
+                color: #ffd0d8;
+                box-shadow: 0 0 12px rgba(255, 51, 79, 0.8), 0 0 30px rgba(255, 51, 79, 0.48), inset 0 0 14px rgba(255, 51, 79, 0.16);
+                text-shadow: 0 0 8px rgba(255, 51, 79, 0.85);
+            }
+
+            .batteryStatusNotif.grey {
+                background: rgba(18, 22, 28, 0.97);
+                border-color: #c5d0dc;
+                color: #f0f5fa;
+                box-shadow: 0 0 12px rgba(190, 205, 220, 0.65), 0 0 28px rgba(190, 205, 220, 0.35), inset 0 0 14px rgba(190, 205, 220, 0.12);
+                text-shadow: 0 0 8px rgba(220, 230, 240, 0.7);
+            }
+        }
+
         @keyframes notifIn {
             from {
                 transform: translate(-50%, -120%) scaleX(0.6);
@@ -6310,9 +6349,10 @@
             let mouseLeftDown = false;
             let lastMoveDirX = 1;
             let lastMoveDirY = 0;
-            let stamina = 10;
-            const maxStamina = 10;
+            let stamina = 30;
+            const maxStamina = 30;
             let sprinting = false;
+            let staminaDepletedLockout = false;
             let lastTime = performance.now();
             let fps = 0;
             let fpsSmoothing = 0.9;
@@ -7847,6 +7887,7 @@
                 controllerSprintHeld = false;
                 sprinting = false;
                 stamina = maxStamina;
+                staminaDepletedLockout = false;
                 updateSprintButtonState();
                 updateMatchHud();
                 updateOxygenUI();
@@ -8519,13 +8560,9 @@
                 onlinePingRequests.clear();
                 updateNetworkStatus();
                 try {
-                    if (!['http:', 'https:'].includes(location.protocol) || !location.host) {
-                        setOnlineLobbyStatus('serverUnavailable');
-                        return;
-                    }
-                    const socketUrl = new URL('/multiplayer', location.href);
-                    socketUrl.protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
-                    const socket = new WebSocket(socketUrl);
+                    const socket = new WebSocket(
+                        'wss://sniper-contamination-v2.onrender.com/multiplayer'
+                    );
                     onlineSocket = socket;
                     onlineConnectionTimeout = setTimeout(() => {
                         if (onlineSocket !== socket) return;
@@ -8535,7 +8572,7 @@
                         onlineSocket = null;
                         onlineMode = false;
                         socket.close();
-                    }, 10000);
+                    }, 60000);
                     socket.addEventListener('open', () => {
                         if (onlineSocket !== socket) return;
                         sendOnlinePing();
@@ -9140,6 +9177,7 @@
                 orbSpawnTimer = 0;
                 oxygen = 35.5;
                 stamina = maxStamina;
+                staminaDepletedLockout = false;
                 sprinting = false;
                 sprintHeld = false;
                 sprintToggleActive = false;
@@ -11250,6 +11288,7 @@
                     mobileSprintHeld = false;
                     mobileSprintToggleEnabled = false;
                     stamina = maxStamina;
+                    staminaDepletedLockout = false;
                     staminaBar.classList.remove('visible');
                     updateSprintButtonState();
                     return;
@@ -11258,12 +11297,28 @@
                 const mobileSprintRequested = mobileSprintToggleEnabled && joystickMoving;
                 const sprintRequested = !battleEliminated
                     && (sprintHeld || sprintToggleActive || controllerSprintHeld || mobileSprintRequested);
-                if (sprintRequested && stamina > 0) {
+
+                // Once exhausted, stamina stays empty until every sprint input is released.
+                if (staminaDepletedLockout && !sprintRequested) {
+                    staminaDepletedLockout = false;
+                }
+
+                const sprintRechargeThreshold = maxStamina * 0.1;
+                const canSprint = !staminaDepletedLockout && stamina >= sprintRechargeThreshold;
+
+                if (sprintRequested && canSprint) {
                     sprinting = true;
                     stamina = Math.max(0, stamina - dt);
+                    if (stamina <= 0) {
+                        staminaDepletedLockout = true;
+                        sprinting = false;
+                    }
                 } else {
                     sprinting = false;
-                    stamina = Math.min(maxStamina, stamina + (maxStamina / 20) * dt);
+                    // Regeneration only happens while sprint is released.
+                    if (!sprintRequested && !staminaDepletedLockout) {
+                        stamina = Math.min(maxStamina, stamina + (maxStamina / 20) * dt);
+                    }
                 }
                 const staminaRatio = stamina / maxStamina;
                 staminaBarFill.style.width = (staminaRatio * 100) + '%';
