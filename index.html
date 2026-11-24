@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <link rel="icon" type="image/x-icon" href="icon.ico">
     <title>Sniper Contamination</title>
     <style>
@@ -5921,10 +5922,19 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
             function resizeCanvas() {
-                canvas.width = canvas.clientWidth;
-                canvas.height = canvas.clientHeight;
+                const width = Math.max(1, Math.round(gameContainer.clientWidth));
+                const height = Math.max(1, Math.round(gameContainer.clientHeight));
+                if (canvas.width !== width) canvas.width = width;
+                if (canvas.height !== height) canvas.height = height;
             }
-            window.addEventListener('resize', resizeCanvas);
+            window.addEventListener('resize', resizeCanvas, { passive: true });
+            window.addEventListener('orientationchange', resizeCanvas, { passive: true });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', resizeCanvas, { passive: true });
+            }
+            if ('ResizeObserver' in window) {
+                new ResizeObserver(resizeCanvas).observe(gameContainer);
+            }
             resizeCanvas();
 
             const menu = document.getElementById('menu');
@@ -9613,9 +9623,18 @@
                 updateFPSDescriptionVisibility();
                 updateSettingsButtonsVisibility();
             }
-            function setJoystickPosition(x = 88, y = Math.max(170, window.innerHeight - 170)) {
-                joystickCenter.x = Math.max(0, Math.min(window.innerWidth, x));
-                joystickCenter.y = Math.max(0, Math.min(window.innerHeight, y));
+            function setJoystickPosition(clientX = null, clientY = null) {
+                const rect = gameContainer.getBoundingClientRect();
+                const width = gameContainer.clientWidth || rect.width;
+                const height = gameContainer.clientHeight || rect.height;
+                const hasTouchPosition = Number.isFinite(clientX) && Number.isFinite(clientY);
+                const localX = hasTouchPosition ? clientX - rect.left : 88;
+                const localY = hasTouchPosition ? clientY - rect.top : Math.max(170, height - 170);
+                const maxX = Math.max(60, width - 60);
+                const maxY = Math.max(60, height - 60);
+
+                joystickCenter.x = Math.max(Math.min(60, width / 2), Math.min(maxX, localX));
+                joystickCenter.y = Math.max(Math.min(60, height / 2), Math.min(maxY, localY));
                 joystickBase.style.left = (joystickCenter.x - 60) + 'px';
                 joystickBase.style.top = (joystickCenter.y - 60) + 'px';
                 joystickStick.style.left = joystickCenter.x + 'px';
@@ -9631,8 +9650,11 @@
                 joystickVector.y = 0;
             }
             function updateJoystick(clientX, clientY) {
-                const dx = clientX - joystickCenter.x;
-                const dy = clientY - joystickCenter.y;
+                const rect = gameContainer.getBoundingClientRect();
+                const localX = clientX - rect.left;
+                const localY = clientY - rect.top;
+                const dx = localX - joystickCenter.x;
+                const dy = localY - joystickCenter.y;
                 const maxDist = 50;
                 let dist = Math.sqrt(dx * dx + dy * dy);
                 let nx = 0, ny = 0;
@@ -13367,6 +13389,330 @@
 
             #menu .sc-intro-status i {
                 animation: none;
+            }
+        }
+
+        /* Mobile viewport and overflow corrections */
+        @media (max-width: 700px) {
+
+            html,
+            body {
+                width: 100%;
+                min-width: 0;
+                min-height: 100%;
+                overscroll-behavior: none;
+            }
+
+            #gameContainer {
+                width: 100%;
+                height: 100vh;
+                height: 100dvh;
+                min-height: 0;
+                overflow: hidden;
+            }
+
+            #settingsScreen {
+                width: 100%;
+                height: 100%;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+
+            #settingsScreen .settingsPanel {
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                min-height: 0;
+                padding:
+                    max(1rem, env(safe-area-inset-top)) max(.85rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(.85rem, env(safe-area-inset-left));
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            #menu {
+                box-sizing: border-box;
+                overflow-x: hidden;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                padding:
+                    max(5.25rem, calc(env(safe-area-inset-top) + 4.25rem)) max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+            }
+
+            #menu .sc-title-wrap {
+                width: 100%;
+                max-width: 42rem;
+                min-width: 0;
+                margin: auto;
+            }
+
+            #menu #titleMain {
+                max-width: 100%;
+                margin: .75rem 0 1.1rem;
+                font-size: clamp(1.55rem, 7.2vw, 2.65rem);
+                line-height: 1.12;
+                letter-spacing: clamp(.035rem, .65vw, .14rem);
+                overflow-wrap: anywhere;
+                text-wrap: balance;
+            }
+
+            #menu .sc-intro-kicker {
+                max-width: 100%;
+                font-size: clamp(.58rem, 2.5vw, .78rem);
+                letter-spacing: .14em;
+                text-align: center;
+            }
+
+            #menu .sc-intro-status {
+                max-width: 100%;
+                line-height: 1.5;
+                text-align: center;
+                overflow-wrap: anywhere;
+            }
+
+            #menu .buttonRow {
+                width: 100%;
+                gap: .65rem;
+                margin-top: 1rem;
+            }
+
+            #menu .buttonRow .btn {
+                min-width: min(125px, 42vw);
+                max-width: 100%;
+                padding: .72rem 1rem;
+                font-size: .88rem;
+            }
+
+            .batteryWidget {
+                top: max(12px, env(safe-area-inset-top));
+                right: max(12px, env(safe-area-inset-right));
+            }
+
+            .menu #btnMenuQuit {
+                top: max(12px, env(safe-area-inset-top));
+                left: max(12px, env(safe-area-inset-left));
+                width: 2.85rem;
+                height: 2.85rem;
+            }
+
+            .menuActionOverlay,
+            .pauseConfirmOverlay,
+            .savedRunConfirmOverlay,
+            .matchLoadingOverlay,
+            .battleResultOverlay {
+                box-sizing: border-box;
+                overflow-x: hidden;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                padding:
+                    max(.75rem, env(safe-area-inset-top)) max(.75rem, env(safe-area-inset-right)) max(.75rem, env(safe-area-inset-bottom)) max(.75rem, env(safe-area-inset-left));
+            }
+
+            .menuActionContent,
+            .pauseConfirmContent,
+            .savedRunConfirmContent,
+            .matchLoadingContent,
+            .battleResultContent {
+                box-sizing: border-box;
+                width: min(100%, 42rem);
+                max-width: 100%;
+                max-height: 100%;
+                padding: clamp(1rem, 4vw, 1.5rem);
+                overflow-x: hidden;
+                overflow-y: auto;
+                overflow-wrap: anywhere;
+            }
+
+            .pauseOverlay,
+            .deathOverlay {
+                box-sizing: border-box;
+                justify-content: flex-start;
+                overflow-x: hidden;
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                -webkit-overflow-scrolling: touch;
+                padding:
+                    max(1rem, env(safe-area-inset-top)) max(.75rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(.75rem, env(safe-area-inset-left));
+            }
+
+            .pauseOverlayContent,
+            .deathOverlayContent {
+                box-sizing: border-box;
+                width: min(100%, 38rem);
+                max-width: 100%;
+                max-height: 100%;
+                margin: auto;
+                padding: clamp(1rem, 4vw, 1.5rem);
+                overflow-x: hidden;
+                overflow-y: auto;
+                overflow-wrap: anywhere;
+            }
+
+            .matchHud {
+                box-sizing: border-box;
+                width: calc(100% - 1.5rem);
+                max-height: calc(100% - 1.5rem);
+                max-height: calc(100dvh - 1.5rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+                padding: .7rem;
+                font-size: .9rem;
+            }
+
+            .battleResultTitle {
+                font-size: clamp(1.65rem, 8vw, 2.8rem);
+                overflow-wrap: anywhere;
+            }
+
+            .battleResultScore {
+                font-size: 1rem;
+                overflow-wrap: anywhere;
+            }
+
+            .pauseButton {
+                top: max(8px, env(safe-area-inset-top));
+                right: max(8px, env(safe-area-inset-right));
+            }
+
+            .topUI {
+                top: max(8px, env(safe-area-inset-top));
+                left: max(8px, env(safe-area-inset-left));
+                right: max(8px, env(safe-area-inset-right));
+            }
+
+            .oxygenBarContainer {
+                left: max(8px, env(safe-area-inset-left));
+                bottom: max(12px, env(safe-area-inset-bottom));
+            }
+
+            .battleHealthBarContainer {
+                bottom: max(12px, env(safe-area-inset-bottom));
+                width: min(52%, 320px);
+            }
+
+            .oxygenWarningText,
+            .oxygenWarningSkull {
+                bottom: max(12px, env(safe-area-inset-bottom));
+                right: max(12px, env(safe-area-inset-right));
+            }
+
+            .explodeCooldownDisplay {
+                top: max(58px, calc(env(safe-area-inset-top) + 52px));
+                right: max(12px, env(safe-area-inset-right));
+                bottom: auto;
+                gap: 2px;
+                font-size: .58rem;
+                letter-spacing: .06rem;
+            }
+
+            .controllerNotification {
+                top: max(10px, env(safe-area-inset-top));
+                max-width: calc(100% - 1.5rem);
+                box-sizing: border-box;
+                white-space: normal;
+                overflow-wrap: anywhere;
+            }
+
+            #tutorialOverlay {
+                box-sizing: border-box;
+                max-width: 100%;
+                padding:
+                    1rem max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+            }
+        }
+
+        @media (max-width: 900px) and (pointer: coarse) {
+            :root {
+                --sc-mobile-control-size: clamp(54px, 15vw, 68px);
+                --sc-mobile-control-gap: clamp(9px, 2.8vw, 14px);
+                --sc-mobile-safe-bottom: max(14px, env(safe-area-inset-bottom));
+                --sc-mobile-safe-right: max(12px, env(safe-area-inset-right));
+                --sc-mobile-safe-left: max(12px, env(safe-area-inset-left));
+            }
+
+            .sprintButton,
+            .explodeButton,
+            .shootButton,
+            .abilityButton {
+                width: var(--sc-mobile-control-size);
+                height: var(--sc-mobile-control-size);
+                box-sizing: border-box;
+            }
+
+            .sprintButton {
+                left: var(--sc-mobile-safe-left);
+                top: max(54px, calc(env(safe-area-inset-top) + 44px));
+            }
+
+            .shootButton {
+                right: var(--sc-mobile-safe-right);
+                bottom: var(--sc-mobile-safe-bottom);
+            }
+
+            .explodeButton {
+                right: var(--sc-mobile-safe-right);
+                bottom: calc(var(--sc-mobile-safe-bottom) + var(--sc-mobile-control-size) + var(--sc-mobile-control-gap));
+            }
+
+            .empButton {
+                right: calc(var(--sc-mobile-safe-right) + var(--sc-mobile-control-size) + var(--sc-mobile-control-gap));
+                bottom: calc(var(--sc-mobile-safe-bottom) + var(--sc-mobile-control-size) + var(--sc-mobile-control-gap));
+            }
+
+            .phaseButton {
+                right: var(--sc-mobile-safe-right);
+                bottom: calc(var(--sc-mobile-safe-bottom) + (var(--sc-mobile-control-size) + var(--sc-mobile-control-gap)) * 2);
+            }
+
+            .joystickBase {
+                width: 120px;
+                height: 120px;
+            }
+        }
+
+        @media (max-width: 900px) and (pointer: coarse) and (orientation: landscape) {
+            :root {
+                --sc-mobile-control-size: clamp(48px, 13vh, 58px);
+                --sc-mobile-control-gap: 8px;
+                --sc-mobile-safe-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+
+            .sprintButton {
+                top: max(42px, calc(env(safe-area-inset-top) + 34px));
+            }
+
+            .explodeCooldownDisplay {
+                top: max(48px, calc(env(safe-area-inset-top) + 42px));
+                font-size: .52rem;
+            }
+
+            .oxygenBarContainer,
+            .battleHealthBarContainer {
+                bottom: max(8px, env(safe-area-inset-bottom));
+            }
+        }
+
+        @media (max-width: 380px) and (orientation: portrait) {
+            #menu #titleMain {
+                font-size: clamp(1.45rem, 7vw, 1.9rem);
+            }
+
+            #menu .buttonRow .btn {
+                min-width: 0;
+                padding-inline: .8rem;
+            }
+
+            .settingsGroup {
+                padding: .8rem;
+            }
+
+            .settingsChoiceButtons {
+                gap: .4rem;
+            }
+
+            .settingsChoiceButtons button {
+                min-width: 0;
+                padding-inline: .65rem;
+                font-size: .82rem;
             }
         }
     </style>
