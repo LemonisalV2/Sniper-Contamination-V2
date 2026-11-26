@@ -8571,7 +8571,9 @@
                 updateNetworkStatus();
                 try {
                     const socket = new WebSocket(
-                        'wss://sniper-contamination-server.lemonisalgd-86.workers.dev/multiplayer'
+                        matchOptions && matchOptions.mode === 'battle'
+                            ? 'wss://sniper-contamination-server.lemonisalgd-86.workers.dev/multiplayer-battle'
+                            : 'wss://sniper-contamination-server.lemonisalgd-86.workers.dev/multiplayer'
                     );
                     onlineSocket = socket;
                     onlineConnectionTimeout = setTimeout(() => {
