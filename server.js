@@ -106,6 +106,22 @@ function battlePlayersIn(room) {
 function broadcast(room, message) {
     for (const client of room.players.keys()) send(client, message);
 }
+function startPlayerStateBroadcast(room) {
+    room.playerStateInterval = setInterval(() => {
+        if (!room.playerStateDirty) return;
+
+        room.playerStateDirty = false;
+
+        if (!rooms.has(room.code) || room.players.size === 0) return;
+
+        broadcast(room, {
+            type: 'player-states',
+            players: room.mode === 'battle'
+                ? battlePlayersIn(room)
+                : playersIn(room)
+        });
+    }, 50);
+}
 
 function leaveRoom(client) {
     const room = client.room;
@@ -118,6 +134,7 @@ function leaveRoom(client) {
         }
         room.players.clear();
         clearInterval(room.interval);
+        clearInterval(room.playerStateInterval);
         rooms.delete(room.code);
         client.room = null;
         return;
@@ -131,6 +148,7 @@ function leaveRoom(client) {
     client.room = null;
     if (room.players.size === 0) {
         clearInterval(room.interval);
+        clearInterval(room.playerStateInterval);
         clearTimeout(room.battleRoundTimeout);
         rooms.delete(room.code);
         return;
@@ -222,6 +240,8 @@ function createMatch(clients, mode, requiredPlayers) {
         startedAt: null,
         lastTick: Date.now(),
         interval: null,
+        playerStateInterval: null,
+        playerStateDirty: false,
         mode,
         requiredPlayers,
         matchmade: true,
@@ -284,6 +304,8 @@ function createMatch(clients, mode, requiredPlayers) {
         });
     }
     rooms.set(code, room);
+    startPlayerStateBroadcast(room);
+
     room.interval = setInterval(() => {
         if (room.startedAt === null || room.battleEnded || room.battleRoundOver) return;
         if (room.mode === 'battle') {
@@ -304,8 +326,8 @@ function joinMatchmakingQueue(client, message) {
     const isValidSize = mode === 'team'
         ? Number.isInteger(requiredPlayers) && requiredPlayers >= 2 && requiredPlayers <= 5
         : mode === 'battle'
-            && Number.isInteger(requiredPlayers) && requiredPlayers >= 2
-            && requiredPlayers <= 10 && requiredPlayers % 2 === 0;
+        && Number.isInteger(requiredPlayers) && requiredPlayers >= 2
+        && requiredPlayers <= 10 && requiredPlayers % 2 === 0;
     if (!isValidSize) {
         send(client, { type: 'error', code: 'invalid-match-size' });
         return;
@@ -363,6 +385,8 @@ function createRoom(client) {
         startedAt: null,
         lastTick: Date.now(),
         interval: null,
+        playerStateInterval: null,
+        playerStateDirty: false,
         mode: 'team',
         requiredPlayers: 2,
         matchmade: false,
@@ -375,6 +399,8 @@ function createRoom(client) {
     room.players.set(client, createPlayer());
     client.room = room;
     rooms.set(code, room);
+
+    startPlayerStateBroadcast(room);
 
     room.interval = setInterval(() => {
         if (room.startedAt !== null && room.mode !== 'battle') {
@@ -769,7 +795,7 @@ socketServer.on('connection', client => {
                 recipients: room.players.size,
                 text
             });
-} else if (message.type === 'battle-score') {
+        } else if (message.type === 'battle-score') {
             return;
         } else if (message.type === 'battle-hit') {
             applyBattleHit(client, message);
@@ -816,10 +842,7 @@ socketServer.on('connection', client => {
                 : 0;
             player.alive = message.alive !== false;
             player.lastStateAt = Date.now();
-            broadcast(room, {
-                type: 'player-states',
-                players: room.mode === 'battle' ? battlePlayersIn(room) : playersIn(room)
-            });
+            room.playerStateDirty = true;
         } else if (message.type === 'player-projectile') {
             const room = client.room;
             if (!room || room.startedAt === null
@@ -903,13 +926,14 @@ socketServer.on('connection', client => {
 server.listen(PORT, HOST, () => {
     console.log(`SNIPER CONTAMINATION server listening on http://${HOST}:${PORT}`);
 });
-
 function shutdown() {
     for (const room of rooms.values()) {
         clearInterval(room.interval);
+        clearInterval(room.playerStateInterval);
         clearTimeout(room.countdownTimeout);
         clearTimeout(room.battleRoundTimeout);
     }
+
     socketServer.close();
     server.close(() => process.exit(0));
 }

@@ -65,6 +65,8 @@
     }
   },
   "dependencies": {
+    "dotenv": "^18.0.10",
+    "pg": "^8.23.1",
     "ws": "^8.18.0"
   },
   "type": "commonjs",
