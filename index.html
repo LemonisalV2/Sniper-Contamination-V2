@@ -11196,7 +11196,7 @@
                 for (const enemySet of enemySets) {
                     for (const enemy of enemySet) {
                         if (Math.hypot(enemy.x - player.x, enemy.y - player.y) <= pulseRadius + enemy.radius) {
-                            enemy.stunTimer = 3.5;
+                            enemy.stunTimer = 30;
                             enemy.vx = 0;
                             enemy.vy = 0;
                             spawnExplosionEffect(enemy.x, enemy.y, '#00eaff', 10);
@@ -11220,7 +11220,7 @@
             function triggerPhaseShift() {
                 if (!running || paused || dead || onlineMatchType === 'battle' || touchDeathActive || phaseCooldown > 0) return;
                 phaseCooldown = 35;
-                phaseShiftTimer = 5;
+                phaseShiftTimer = 30;
                 updateAbilityEffects(0);
                 playPhaseShiftSound();
                 updateAbilityUI();
