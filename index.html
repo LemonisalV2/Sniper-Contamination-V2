@@ -7604,6 +7604,186 @@
                 return false;
             }
 
+            // ========================================
+            // SNIPER CONTAMINATION - ONLINE CHAT
+            // ========================================
+
+            let onlineChatOpen = false;
+            let onlineChatBubbleTimeout = null;
+
+            const onlineChatStyle = document.createElement('style');
+            onlineChatStyle.textContent = `
+    #scOnlineChatInput {
+        position: fixed;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100000;
+        display: none;
+        width: min(460px, calc(100vw - 32px));
+        padding: 12px;
+        background: rgba(2, 12, 9, .96);
+        border: 1px solid #00ff66;
+        border-radius: 12px;
+        box-shadow: 0 0 18px rgba(0,255,102,.35);
+    }
+
+    #scOnlineChatInput.active {
+        display: block;
+        animation: scChatIn .18s ease-out;
+    }
+
+    #scOnlineChatField {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        color: #eafff1;
+        background: #02040a;
+        border: 1px solid #176b3b;
+        border-radius: 7px;
+        outline: none;
+        font: 16px 'Trebuchet MS', sans-serif;
+    }
+
+    #scOnlineChatField:focus {
+        border-color: #00ff66;
+        box-shadow: 0 0 10px rgba(0,255,102,.25);
+    }
+
+    #scOnlineChatBubble {
+        position: fixed;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-15px);
+        z-index: 99999;
+        display: none;
+        width: max-content;
+        max-width: min(600px, calc(100vw - 36px));
+        box-sizing: border-box;
+        padding: 15px 23px;
+        color: #eafff1;
+        background: linear-gradient(110deg, rgba(2,18,10,.97), rgba(3,35,18,.96));
+        border: 1px solid #00ff66;
+        border-left: 5px solid #00ff66;
+        border-radius: 12px 12px 12px 3px;
+        box-shadow: 0 0 22px rgba(0,255,102,.28);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity .25s ease, transform .25s ease;
+        overflow-wrap: anywhere;
+        font-family: 'Trebuchet MS', sans-serif;
+    }
+
+    #scOnlineChatBubble.active {
+        display: block;
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        animation: scChatIn .25s ease-out;
+    }
+
+    #scOnlineChatSender {
+        display: block;
+        margin-bottom: 5px;
+        color: #00ff66;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+    }
+
+    #scOnlineChatText {
+        font-size: 17px;
+        line-height: 1.4;
+    }
+
+    @keyframes scChatIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(-12px) scale(.96); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+`;
+            document.head.appendChild(onlineChatStyle);
+
+            const onlineChatInputPanel = document.createElement('div');
+            onlineChatInputPanel.id = 'scOnlineChatInput';
+            onlineChatInputPanel.innerHTML = `
+    <input
+        id="scOnlineChatField"
+        type="text"
+        maxlength="120"
+        placeholder="Type a message and press Enter..."
+        autocomplete="off"
+        spellcheck="false"
+    >
+`;
+            document.body.appendChild(onlineChatInputPanel);
+
+            const onlineChatField = document.getElementById('scOnlineChatField');
+
+            const onlineChatBubble = document.createElement('div');
+            onlineChatBubble.id = 'scOnlineChatBubble';
+            onlineChatBubble.innerHTML = `
+    <span id="scOnlineChatSender"></span>
+    <span id="scOnlineChatText"></span>
+`;
+            document.body.appendChild(onlineChatBubble);
+
+            function openOnlineChat() {
+                if (onlineChatOpen) return;
+
+                onlineChatOpen = true;
+                onlineChatInputPanel.classList.add('active');
+                onlineChatField.value = '';
+                onlineChatField.focus();
+            }
+
+            function closeOnlineChat() {
+                onlineChatOpen = false;
+                onlineChatInputPanel.classList.remove('active');
+                onlineChatField.blur();
+            }
+
+            function showOnlineChatMessage(message) {
+                const sender = document.getElementById('scOnlineChatSender');
+                const text = document.getElementById('scOnlineChatText');
+
+                sender.textContent = message.senderName || 'Player';
+                text.textContent = message.text || '';
+
+                onlineChatBubble.classList.add('active');
+
+                if (onlineChatBubbleTimeout) {
+                    clearTimeout(onlineChatBubbleTimeout);
+                }
+
+                onlineChatBubbleTimeout = setTimeout(() => {
+                    onlineChatBubble.classList.remove('active');
+                    onlineChatBubbleTimeout = null;
+                }, 4000);
+            }
+
+            onlineChatField.addEventListener('keydown', event => {
+                event.stopPropagation();
+
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+
+                    const text = onlineChatField.value.trim();
+
+                    if (text) {
+                        sendOnlineMessage({
+                            type: 'chat-message',
+                            text
+                        });
+                    }
+
+                    closeOnlineChat();
+                } else if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeOnlineChat();
+                }
+            });
+
+
             function isMultiplayerSession() {
                 return onlineMode || Boolean(onlineRoomCode);
             }
@@ -8344,6 +8524,11 @@
             }
 
             function handleOnlineMessage(message) {
+                if (message.type === 'chat-message') {
+                    showOnlineChatMessage(message);
+                    return;
+                }
+
                 if (message.type === 'queue-status') {
                     clearOnlineConnectionTimeout();
                     renderQueueStatus(message.queuedPlayers);
@@ -8571,9 +8756,7 @@
                 updateNetworkStatus();
                 try {
                     const socket = new WebSocket(
-                        matchOptions && matchOptions.mode === 'battle'
-                            ? 'wss://sniper-contamination-server.lemonisalgd-86.workers.dev/multiplayer-battle'
-                            : 'wss://sniper-contamination-server.lemonisalgd-86.workers.dev/multiplayer'
+                        'wss://sniper-contamination-v2.onrender.com/multiplayer'
                     );
                     onlineSocket = socket;
                     onlineConnectionTimeout = setTimeout(() => {
@@ -9424,6 +9607,19 @@
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden && running && !paused && !dead && !isMultiplayerSession()) {
                     setPaused(true);
+                }
+            });
+
+            window.addEventListener('keydown', e => {
+                if (
+                    e.key === '/' &&
+                    onlineMode &&
+                    ['team', 'battle'].includes(onlineMatchType) &&
+                    !onlineChatOpen
+                ) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    openOnlineChat();
                 }
             });
             window.addEventListener('keydown', (e) => {

@@ -688,6 +688,7 @@ function applyBattleHit(client, message) {
 socketServer.on('connection', client => {
     client.room = null;
     client.queueKey = null;
+    client.lastChatAt = 0;
     client.on('message', rawMessage => {
         let message;
         try {
@@ -711,7 +712,64 @@ socketServer.on('connection', client => {
             leaveQueue(client, true);
         } else if (message.type === 'loading-ready') {
             markPlayerLoaded(client);
-        } else if (message.type === 'battle-score') {
+
+        } else if (message.type === 'chat-message') {
+            const room = client.room;
+            const player = room && room.players.get(client);
+
+            console.log('[CHAT TEST] Message received:', {
+                hasRoom: !!room,
+                hasPlayer: !!player,
+                started: room ? room.startedAt !== null : false,
+                mode: room?.mode,
+                text: message.text
+            });
+
+            if (
+                !room ||
+                !player ||
+                room.startedAt === null ||
+                !['team', 'battle'].includes(room.mode) ||
+                typeof message.text !== 'string'
+            ) {
+                console.log('[CHAT TEST] Message rejected by validation');
+                return;
+            }
+
+            const now = Date.now();
+
+            if (now - client.lastChatAt < 700) {
+                console.log('[CHAT TEST] Rate limited');
+                return;
+            }
+
+            const text = message.text
+                .replace(/[\u0000-\u001F\u007F]/g, ' ')
+                .trim()
+                .slice(0, 120);
+
+            if (!text) {
+                console.log('[CHAT TEST] Empty message');
+                return;
+            }
+
+            client.lastChatAt = now;
+
+            const chatMessage = {
+                type: 'chat-message',
+                senderId: player.id,
+                senderName: `Player ${player.id.slice(0, 4)}`,
+                text
+            };
+
+            broadcast(room, chatMessage);
+
+            console.log('[CHAT TEST] Message broadcast:', {
+                roomCode: room.code,
+                recipients: room.players.size,
+                text
+            });
+} else if (message.type === 'battle-score') {
             return;
         } else if (message.type === 'battle-hit') {
             applyBattleHit(client, message);
